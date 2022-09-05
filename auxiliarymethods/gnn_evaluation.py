@@ -214,7 +214,7 @@ def gnn_evaluation_no_val(gnn, ds_name, layers, hidden, max_num_epochs=200, batc
                         lr = scheduler.optimizer.param_groups[0]['lr']
                         train(train_loader, model, optimizer, device)
                         train_acc = test(train_loader, model, device)
-                        scheduler.step(train_loader)
+                        scheduler.step(train_acc)
 
                         best_test = test(test_loader, model, device) * 100.0
                         best_train = train_acc
