@@ -15,18 +15,18 @@ def main():
 
         # GIN, dataset d, layers in [1:6], hidden dimension in {32,64,128}.
         # TODO currently evaluating without validation set.
-        train_acc, train_std, test_acc, test_std,  = gnn_evaluation_no_val(Conv, d, [3], [8], max_num_epochs=100, batch_size=64,
-                                       start_lr=0.01, num_repetitions=num_reps, all_std=True)
+        train_acc, train_std, test_acc, test_std,  = gnn_evaluation_no_val(Conv, d, [5], [8], max_num_epochs=500, batch_size=64,
+                                       start_lr=0.01, factor=0.5, patience=10, num_repetitions=num_reps, all_std=True)
         print(d + " " + "CONV " + str(train_acc) + " " + str(train_std) + " " + str(test_acc) + " " + str(test_std))
         results.append(d + " " + "CONV " + str(train_acc) + " " + str(train_std) + " " + str(test_acc) + " " + str(test_std))
 
-        train_acc, train_std, test_acc, test_std,  = gnn_evaluation_no_val(Conv, d, [3], [32], max_num_epochs=100, batch_size=64,
-                                       start_lr=0.01, num_repetitions=num_reps, all_std=True)
+        train_acc, train_std, test_acc, test_std,  = gnn_evaluation_no_val(Conv, d, [5], [32], max_num_epochs=500, batch_size=64,
+                                       start_lr=0.01, factor=0.5, patience=10, num_repetitions=num_reps, all_std=True)
         print(d + " " + "CONV " + str(train_acc) + " " + str(train_std) + " " + str(test_acc) + " " + str(test_std))
         results.append(d + " " + "CONV " + str(train_acc) + " " + str(train_std) + " " + str(test_acc) + " " + str(test_std))
 
-        train_acc, train_std, test_acc, test_std,  = gnn_evaluation_no_val(Conv, d, [3], [256], max_num_epochs=100, batch_size=64,
-                                       start_lr=0.01, num_repetitions=num_reps, all_std=True)
+        train_acc, train_std, test_acc, test_std,  = gnn_evaluation_no_val(Conv, d, [5], [512], max_num_epochs=500, batch_size=64,
+                                       start_lr=0.01, factor=0.5, patience=10, num_repetitions=num_reps, all_std=True)
         print(d + " " + "CONV " + str(train_acc) + " " + str(train_std) + " " + str(test_acc) + " " + str(test_std))
         results.append(d + " " + "CONV " + str(train_acc) + " " + str(train_std) + " " + str(test_acc) + " " + str(test_std))
 
