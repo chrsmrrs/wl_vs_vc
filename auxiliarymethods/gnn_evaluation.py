@@ -221,9 +221,10 @@ def gnn_evaluation_no_val(gnn, ds_name, layers, hidden, max_num_epochs=200, batc
                         best_test = test(test_loader, model, device) * 100.0
                         best_train = train_acc
 
+                        # TODO 
                         # Break if learning rate is smaller 10**-6.
-                        if lr < min_lr:
-                            break
+                        # if lr < min_lr:
+                        #     break
 
             test_accuracies.append(best_test)
             train_accuracies.append(best_train)
