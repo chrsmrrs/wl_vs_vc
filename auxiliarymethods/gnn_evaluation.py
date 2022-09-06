@@ -187,6 +187,7 @@ def gnn_evaluation_no_val(gnn, ds_name, layers, hidden, max_num_epochs=200, batc
         dataset.shuffle()
 
         for train_index, test_index in kf.split(list(range(len(dataset)))):
+            print("###")
             # Sample 10% split from training split for validation.
             best_test = 0.0
             best_train = 0.0
