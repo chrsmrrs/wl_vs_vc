@@ -16,7 +16,7 @@ class Conv(torch.nn.Module):
                 )
 
         # TODO
-        #self.lin1 = Linear(hidden, hidden)
+        self.lin1 = Linear(hidden, hidden)
         self.lin2 = Linear(hidden, dataset.num_classes)
 
     def reset_parameters(self):
