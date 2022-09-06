@@ -3,7 +3,7 @@ from auxiliarymethods.gnn_evaluation import gnn_evaluation, gnn_evaluation_no_va
 from gnn_baselines.gnn_architectures import Conv
 
 def main():
-    num_reps = 3
+    num_reps = 1
 
     ### Smaller datasets.
     dataset = [["PROTEINS", True]]
