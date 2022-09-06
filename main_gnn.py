@@ -20,6 +20,7 @@ def main():
         print(d + " " + "CONV " + str(train_acc) + " " + str(train_std) + " " + str(test_acc) + " " + str(test_std))
         results.append(d + " " + "CONV " + str(train_acc) + " " + str(train_std) + " " + str(test_acc) + " " + str(test_std))
 
+
     for r in results:
         print(r)
 
