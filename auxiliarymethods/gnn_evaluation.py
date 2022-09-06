@@ -207,14 +207,16 @@ def gnn_evaluation_no_val(gnn, ds_name, layers, hidden, max_num_epochs=200, batc
                     model.reset_parameters()
 
                     optimizer = torch.optim.Adam(model.parameters(), lr=start_lr)
-                    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
-                                                                           factor=factor, patience=patience,
-                                                                           min_lr=0.0000001)
+
+                    # TODO
+                    #scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min',
+                    #                                                      factor=factor, patience=patience,
+                    #                                                       min_lr=0.0000001)
                     for epoch in range(1, max_num_epochs + 1):
-                        lr = scheduler.optimizer.param_groups[0]['lr']
+                        #lr = scheduler.optimizer.param_groups[0]['lr']
                         train(train_loader, model, optimizer, device)
                         train_acc = test(train_loader, model, device)
-                        scheduler.step(train_acc)
+                        #scheduler.step(train_acc)
 
                         best_test = test(test_loader, model, device) * 100.0
                         best_train = train_acc
