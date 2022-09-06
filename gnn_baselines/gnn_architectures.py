@@ -26,9 +26,9 @@ class Conv(torch.nn.Module):
 
     def forward(self, data):
         x, edge_index, batch = data.x, data.edge_index, data.batch
-        x = self.conv1(x, edge_index)
+        x = self.conv1(x, edge_index).relu()
         for conv in self.convs:
-            x = conv(x, edge_index)
+            x = conv(x, edge_index).relu()
 
         # TODO
         x = global_add_pool(x, batch)
