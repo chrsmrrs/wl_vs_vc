@@ -15,7 +15,7 @@ class Conv(torch.nn.Module):
                 GraphConv(hidden, hidden, aggr = 'add', bias = True)
                 )
 
-        # TODO
+
         self.lin1 = Linear(hidden, hidden)
         self.lin2 = Linear(hidden, dataset.num_classes)
 
@@ -36,7 +36,7 @@ class Conv(torch.nn.Module):
         x = global_add_pool(x, batch)
 
         # TODO
-        #x = F.relu(self.lin1(x))
+        x = F.relu(self.lin1(x))
         # TODO
         #x = F.dropout(x, p=0.5, training=self.training)
         x = self.lin2(x)
