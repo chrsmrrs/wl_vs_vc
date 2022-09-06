@@ -14,7 +14,9 @@ class Conv(torch.nn.Module):
             self.convs.append(
                 GraphConv(hidden, hidden, aggr = 'add', bias = True)
                 )
-        self.lin1 = Linear(hidden, hidden)
+
+        # TODO
+        #self.lin1 = Linear(hidden, hidden)
         self.lin2 = Linear(hidden, dataset.num_classes)
 
     def reset_parameters(self):
@@ -33,7 +35,8 @@ class Conv(torch.nn.Module):
         # TODO
         x = global_add_pool(x, batch)
 
-        x = F.relu(self.lin1(x))
+        # TODO
+        #x = F.relu(self.lin1(x))
         # TODO
         #x = F.dropout(x, p=0.5, training=self.training)
         x = self.lin2(x)

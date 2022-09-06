@@ -6,7 +6,7 @@ def main():
     num_reps = 3
 
     ### Smaller datasets.
-    dataset = [["PROTEINS", True]]
+    dataset = [["PTC_FM", True]]
 
     results = []
     for d, use_labels in dataset:
@@ -14,7 +14,7 @@ def main():
         dp.get_dataset(d)
 
         # GIN, dataset d, layers in [1:6], hidden dimension in {32,64,128}.
-        # TODO val
+        # TODO currently evaluating without validation set.
         train_acc, train_std, test_acc, test_std,  = gnn_evaluation_no_val(Conv, d, [3], [8], max_num_epochs=100, batch_size=64,
                                        start_lr=0.01, num_repetitions=num_reps, all_std=True)
         print(d + " " + "CONV " + str(train_acc) + " " + str(train_std) + " " + str(test_acc) + " " + str(test_std))
