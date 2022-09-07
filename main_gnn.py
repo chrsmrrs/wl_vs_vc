@@ -7,7 +7,7 @@ def main():
     num_reps = 1
 
     ### Smaller datasets.
-    dataset = [["MUTAG", True]]
+    dataset = [["ENZYMES", True]]
 
     results = []
     for d, use_labels in dataset:
