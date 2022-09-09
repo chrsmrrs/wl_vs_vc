@@ -12,7 +12,7 @@ class Conv(torch.nn.Module):
         self.convs = torch.nn.ModuleList()
         for i in range(num_layers - 1):
             self.convs.append(
-                GraphConv(hidden, hidden, aggr = 'add', bias = True)
+                GraphConv(hidden, hidden, aggr='add', bias=True)
                 )
 
 
