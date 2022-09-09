@@ -11,7 +11,7 @@ from torch_geometric.nn import MLP, GINConv, global_add_pool, GraphConv
 parser = argparse.ArgumentParser()
 parser.add_argument('--dataset', type=str, default='PROTEINS')
 parser.add_argument('--batch_size', type=int, default=128)
-parser.add_argument('--hidden_channels', type=int, default=256)
+parser.add_argument('--hidden_channels', type=int, default=64)
 parser.add_argument('--num_layers', type=int, default=5)
 parser.add_argument('--lr', type=float, default=0.001)
 parser.add_argument('--epochs', type=int, default=1000)
