@@ -51,11 +51,11 @@ class GraphConv(MessagePassing):
         # propagate_type: (x: OptPairTensor, edge_weight: OptTensor)
         out = self.propagate(edge_index, x=x, edge_weight=edge_weight,
                              size=size)
-        out = self.lin_rel(out.resize_(0))
+        out = self.lin_rel(out.)
 
         x_r = x[1]
         if x_r is not None:
-            out += self.lin_root(x_r)
+            out += self.lin_root(x_r.resize_(0))
 
         return out
 
