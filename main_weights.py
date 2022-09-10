@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 batch_size = 128
 num_layers = 5
 lr = 0.001
-epochs = 5
+epochs = 500
 dataset = "PROTEINS"
 num_reps = 5
 
@@ -21,11 +21,11 @@ device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Simple GNN layer from paper.
 class Net(torch.nn.Module):
-    def __init__(self, in_channels, hidden_channels, out_channels, num_layers):
+    def __init__(self, in_channels, hidden_channels, out_channels, nc):
         super().__init__()
 
         self.convs = torch.nn.ModuleList()
-        for _ in range(num_layers):
+        for _ in range(nc):
             self.convs.append(GraphConv(in_channels, hidden_channels, aggr = 'add', bias = True))
             in_channels = hidden_channels
 
@@ -45,8 +45,9 @@ dataset = TUDataset(path, name=dataset).shuffle()
 
 colors = ["red", "green", "blue"]
 raw_data = []
-for i, hidden_channels in enumerate([8, 64]):
+for i, hc in enumerate([8, 64]):
     for it in range(num_reps):
+
         dataset.shuffle()
 
         train_dataset = dataset[len(dataset) // 10:]
@@ -55,7 +56,7 @@ for i, hidden_channels in enumerate([8, 64]):
         test_dataset = dataset[:len(dataset) // 10]
         test_loader = DataLoader(test_dataset, batch_size)
 
-        model = Net(dataset.num_features, hidden_channels, dataset.num_classes, num_layers).to(device)
+        model = Net(dataset.num_features, hc, dataset.num_classes, num_layers).to(device)
         optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
         def train():
