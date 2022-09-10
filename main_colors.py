@@ -14,7 +14,7 @@ batch_size = 128
 num_layers = 5
 lr = 0.001
 epochs = 500
-dataset = "ENZYMES"
+dataset = "MUTAG"
 num_reps = 5
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -45,7 +45,7 @@ dataset = TUDataset(path, name=dataset).shuffle()
 
 colors = ["red", "green", "blue"]
 raw_data = []
-for i, hc in enumerate([16, 256]):
+for i, hc in enumerate([8, 64]):
     for it in range(num_reps):
 
         dataset.shuffle()
