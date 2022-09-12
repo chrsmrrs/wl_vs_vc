@@ -16,7 +16,7 @@ batch_size = 128
 num_layers = 5
 lr = 0.001
 epochs = 500
-dataset_name_list = ["PROTEINS", "ENZYMES", "NCI1"]
+dataset_name_list = ["ENZYMES", "NCI1"]
 num_reps = 10
 hds = [16, 64, 256]
 
