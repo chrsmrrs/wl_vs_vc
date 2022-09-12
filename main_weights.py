@@ -18,9 +18,9 @@ batch_size = 128
 num_layers = 5
 lr = 0.001
 epochs = 500
-dataset_name_list = ["ENZYMES", "NCI1"]
+dataset_name_list = ["IMDB-BINARY", "IMDB-BINARY", "ENZYMES", "PTC_MR", "NCI1"]
 num_reps = 10
-hds = [16, 64, 256]
+hds = [16, 64, 256, 1024]
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -33,7 +33,7 @@ class NormalizedDegree(object):
         deg = degree(data.edge_index[0], dtype=torch.float)
         deg = (deg - self.mean) / self.std
         data.x = deg.view(-1, 1)
-        return 
+        return
 
 
 # Simple GNN layer from paper.
