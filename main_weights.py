@@ -10,6 +10,7 @@ import torch.nn.functional as F
 from torch_geometric.datasets import TUDataset
 from torch_geometric.loader import DataLoader
 from torch_geometric.nn import MLP, global_add_pool
+import torch_geometric.transforms as T
 from conv import GraphConv
 from torch_geometric.utils import degree
 
