@@ -1,5 +1,6 @@
 import numpy as np
 from graph_tool.all import *
+from auxiliarymethods.auxiliary_methods import read_txt
 
 def wl_simple(graph_db, h, degree=False, uniform=False, gram_matrix=True):
     # Create one empty feature vector for each graph
@@ -78,8 +79,10 @@ def wl_simple(graph_db, h, degree=False, uniform=False, gram_matrix=True):
         return feature_vectors
 
 
-def wl_simple_color_count(graph_db, h, degree=False, uniform=False):
-    # Create one empty feature vector for each graph
+def wl_simple_color_count(dataset, h, degree=False, uniform=False):
+    graph_db, _  = read_txt(dataset)
+
+    # Create one empty feature vector for each graph.
     feature_vectors = []
     for _ in graph_db:
         feature_vectors.append(np.zeros(0, dtype=np.float64))
@@ -110,10 +113,6 @@ def wl_simple_color_count(graph_db, h, degree=False, uniform=False):
 
     max_all = int(np.amax(colors) + 1)
 
-    feature_vectors = [
-        np.concatenate((feature_vectors[i], np.bincount(colors[index[0]:index[1]], minlength=max_all))) for
-        i, index in enumerate(graph_indices)]
-
     i = 0
 
     color_counts = []
@@ -143,12 +142,12 @@ def wl_simple_color_count(graph_db, h, degree=False, uniform=False):
 
         max_all = int(np.amax(colors) + 1)
 
-        feature_vectors = [
+        feature_vectors = np.array([
             np.bincount(colors[index[0]:index[1]], minlength=max_all) for
-            i, index in enumerate(graph_indices)]
+            i, index in enumerate(graph_indices)])
 
         i += 1
-        color_counts.append(feature_vectors.shape[0])
+        color_counts.append(feature_vectors.shape[1])
 
     return color_counts
 

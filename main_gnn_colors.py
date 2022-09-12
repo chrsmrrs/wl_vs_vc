@@ -12,12 +12,12 @@ from torch_geometric.nn import MLP, global_add_pool, GraphConv
 import numpy as np
 
 batch_size = 128
-num_layers = 5
+num_layers = [1,2,3,4,5,7,8,9,10]
 lr = 0.001
 epochs = 500
-dataset = "ENZYMES"
-num_reps = 10
-hds = [16, 64, 256]
+dataset = "PROTEINS"
+num_reps = 5
+hd = 32
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -51,8 +51,8 @@ colors = ["darkorange", "royalblue", "darkorchid"]
 raw_data = []
 table_data = []
 
-for i, hc in enumerate(hds):
-    print(hc)
+for l in num_layers:
+    print(l)
     table_data.append([])
     for it in range(num_reps):
 
@@ -64,7 +64,7 @@ for i, hc in enumerate(hds):
         test_dataset = dataset[:len(dataset) // 10]
         test_loader = DataLoader(test_dataset, batch_size)
 
-        model = Net(dataset.num_features, hc, dataset.num_classes, num_layers).to(device)
+        model = Net(dataset.num_features, hd, dataset.num_classes, l).to(device)
         optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
         def train():
@@ -100,46 +100,37 @@ for i, hc in enumerate(hds):
             test_acc = test(test_loader) * 100.0
 
             #print(it, epoch, train_acc, test_acc, train_acc - test_acc)
-            raw_data.append(
-                {'epoch': epoch, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it,
-                 'hidden_channels': hc})
+            #raw_data.append(
+            #    {'epoch': epoch, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it,
+            #     'hidden_channels': hd})
 
 
-        table_data[-1].append([train_acc, test_acc, train_acc-test_acc])
-
-    data = pd.DataFrame.from_records(raw_data)
-    data = data.astype({'epoch': int})
-
-    ax = sns.lineplot(x = 'epoch',
-                 y = 'train',
-                 data=data, alpha = 1.0, color = colors[i], linestyle='--')
-
-    ax = sns.lineplot(x = 'epoch',
-                 y = 'test',
-                 data=data, alpha = 1.0, color = colors[i])
-
-    # ax = sns.lineplot(x='epoch',
-    #                   y='diff',
-    #                   data=data, color=colors[i], linestyle='--')
-
-    ax.set(xlabel='Epoch', ylabel='Accuracy [%]')
-
-table_data = np.array(table_data)
-
-#print(table_data)
-for i, h in enumerate(hds):
-    train = table_data[i][:, 0]
-    test = table_data[i][:, 1]
-    diff = table_data[i][:, 2]
-
-    print(h)
-    print(train.mean(), train.std())
-    print(test.mean(), test.std())
-    print(diff.mean(), diff.std())
-    print("###$")
+        table_data[-1].append(test_acc)
 
 
-plt.savefig("weights_" + str(dataset) + ".pdf")
-plt.show()
+print(table_data)
 
+exit()
 
+#     # data = pd.DataFrame.from_records(raw_data)
+#     # data = data.astype({'epoch': int})
+#     #
+#     # ax = sns.lineplot(x = 'epoch',
+#     #              y = 'train',
+#     #              data=data, alpha = 1.0, color = colors[i], linestyle='--')
+#     #
+#     # ax = sns.lineplot(x = 'epoch',
+#     #              y = 'test',
+#     #              data=data, alpha = 1.0, color = colors[i])
+#
+#     # ax = sns.lineplot(x='epoch',
+#     #                   y='diff',
+#     #                   data=data, color=colors[i], linestyle='--')
+#
+#     ax.set(xlabel='Epoch', ylabel='Accuracy [%]')
+#
+# table_data = np.array(table_data)
+#
+#
+# plt.savefig("weights_" + str(dataset) + ".pdf")
+# plt.show()
