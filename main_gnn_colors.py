@@ -15,8 +15,8 @@ batch_size = 128
 num_layers = [1,2,3,4,5,7,8,9,10]
 lr = 0.001
 epochs = 500
-dataset = "PROTEINS"
-num_reps = 5
+dataset = "ENZYMES"
+num_reps = 1
 hd = 32
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -104,8 +104,8 @@ for l in num_layers:
             #    {'epoch': epoch, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it,
             #     'hidden_channels': hd})
 
-
-        table_data[-1].append(test_acc)
+        print([train_acc, test_acc, train_acc - test_acc])
+        table_data[-1].append([train_acc, test_acc, train_acc - test_acc])
 
 
 print(table_data)
