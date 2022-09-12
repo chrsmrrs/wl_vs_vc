@@ -16,7 +16,7 @@ batch_size = 128
 num_layers = 5
 lr = 0.001
 epochs = 500
-dataset_name_list = ["MUTAG"]
+dataset_name_list = ["PROTEINS", "ENZYMES", "NCI1"]
 num_reps = 3
 hds = [16, 64, 256]
 
