@@ -12,7 +12,7 @@ from torch_geometric.nn import MLP, global_add_pool, GraphConv
 import numpy as np
 
 batch_size = 128
-num_layers = [1,2,3,4,5,7,8,9,10]
+num_layers = [1,2,3,4,5,6,7,8,9,10]
 lr = 0.001
 epochs = 500
 dataset = "ENZYMES"
