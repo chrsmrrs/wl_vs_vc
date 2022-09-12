@@ -1,6 +1,8 @@
+import csv
 import os.path as osp
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
 import torch
@@ -9,13 +11,11 @@ from torch_geometric.datasets import TUDataset
 from torch_geometric.loader import DataLoader
 from torch_geometric.nn import MLP, global_add_pool, GraphConv
 
-import numpy as np
-
 batch_size = 128
 num_layers = 5
 lr = 0.001
 epochs = 500
-dataset = "ENZYMES"
+dataset_name_list = ["PROTEINS"]
 num_reps = 10
 hds = [16, 64, 256]
 
@@ -32,7 +32,6 @@ class Net(torch.nn.Module):
             self.convs.append(GraphConv(in_channels, hidden_channels, aggr='add', bias=True))
             in_channels = hidden_channels
 
-        # TODO: No dropout.
         self.mlp = MLP([hidden_channels, hidden_channels, out_channels])
 
     def forward(self, x, edge_index, batch):
@@ -43,101 +42,115 @@ class Net(torch.nn.Module):
         return self.mlp(x)
 
 
-path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
-dataset = TUDataset(path, name=dataset).shuffle()
+for dataset_name in dataset_name_list:
+    path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
+    dataset = TUDataset(path, name=dataset_name).shuffle()
 
-colors = ["darkorange", "royalblue", "darkorchid"]
+    colors = ["darkorange", "royalblue", "darkorchid"]
 
-raw_data = []
-table_data = []
+    raw_data = []
+    table_data = []
 
-for i, hc in enumerate(hds):
-    print(hc)
-    table_data.append([])
-    for it in range(num_reps):
+    for i, hc in enumerate(hds):
+        print(hc)
+        table_data.append([])
+        for it in range(num_reps):
 
-        dataset.shuffle()
+            dataset.shuffle()
 
-        train_dataset = dataset[len(dataset) // 10:]
-        train_loader = DataLoader(train_dataset, batch_size, shuffle=True)
+            train_dataset = dataset[len(dataset) // 10:]
+            train_loader = DataLoader(train_dataset, batch_size, shuffle=True)
 
-        test_dataset = dataset[:len(dataset) // 10]
-        test_loader = DataLoader(test_dataset, batch_size)
+            test_dataset = dataset[:len(dataset) // 10]
+            test_loader = DataLoader(test_dataset, batch_size)
 
-        model = Net(dataset.num_features, hc, dataset.num_classes, num_layers).to(device)
-        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-
-        def train():
-            model.train()
-
-            total_loss = 0
-            for data in train_loader:
-                data = data.to(device)
-                optimizer.zero_grad()
-                out = model(data.x, data.edge_index, data.batch)
-                loss = F.cross_entropy(out, data.y)
-                loss.backward()
-                optimizer.step()
-                total_loss += float(loss) * data.num_graphs
-            return total_loss / len(train_loader.dataset)
+            model = Net(dataset.num_features, hc, dataset.num_classes, num_layers).to(device)
+            optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
 
-        @torch.no_grad()
-        def test(loader):
-            model.eval()
+            def train():
+                model.train()
 
-            total_correct = 0
-            for data in loader:
-                data = data.to(device)
-                pred = model(data.x, data.edge_index, data.batch).argmax(dim=-1)
-                total_correct += int((pred == data.y).sum())
-            return total_correct / len(loader.dataset)
-
-
-        for epoch in range(1, epochs + 1):
-            loss = train()
-            train_acc = test(train_loader) * 100.0
-            test_acc = test(test_loader) * 100.0
-
-            #print(it, epoch, train_acc, test_acc, train_acc - test_acc)
-            raw_data.append(
-                {'epoch': epoch, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it,
-                 'hidden_channels': hc})
+                total_loss = 0
+                for data in train_loader:
+                    data = data.to(device)
+                    optimizer.zero_grad()
+                    out = model(data.x, data.edge_index, data.batch)
+                    loss = F.cross_entropy(out, data.y)
+                    loss.backward()
+                    optimizer.step()
+                    total_loss += float(loss) * data.num_graphs
+                return total_loss / len(train_loader.dataset)
 
 
-        table_data[-1].append([train_acc, test_acc, train_acc-test_acc])
+            @torch.no_grad()
+            def test(loader):
+                model.eval()
 
-    data = pd.DataFrame.from_records(raw_data)
-    data = data.astype({'epoch': int})
-
-    ax = sns.lineplot(x = 'epoch',
-                 y = 'train',
-                 data=data, alpha = 1.0, color = colors[i], linestyle='--')
-
-    ax = sns.lineplot(x = 'epoch',
-                 y = 'test',
-                 data=data, alpha = 1.0, color = colors[i])
-
-    # ax = sns.lineplot(x='epoch',
-    #                   y='diff',
-    #                   data=data, color=colors[i], linestyle='--')
-
-    ax.set(xlabel='Epoch', ylabel='Accuracy [%]')
-
-table_data = np.array(table_data)
-
-#print(table_data)
-for i, h in enumerate(hds):
-    train = table_data[i][:, 0]
-    test = table_data[i][:, 1]
-    diff = table_data[i][:, 2]
-
-    print(h)
-    print(train.mean(), train.std())
-    print(test.mean(), test.std())
-    print(diff.mean(), diff.std())
-    print("###$")
+                total_correct = 0
+                for data in loader:
+                    data = data.to(device)
+                    pred = model(data.x, data.edge_index, data.batch).argmax(dim=-1)
+                    total_correct += int((pred == data.y).sum())
+                return total_correct / len(loader.dataset)
 
 
-plt.savefig("weights_" + str(dataset) + ".pdf")
-plt.show()
+            for epoch in range(1, epochs + 1):
+                loss = train()
+                train_acc = test(train_loader) * 100.0
+                test_acc = test(test_loader) * 100.0
+
+                # print(it, epoch, train_acc, test_acc, train_acc - test_acc)
+                raw_data.append(
+                    {'epoch': epoch, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it,
+                     'hidden_channels': hc})
+
+            table_data[-1].append([train_acc, test_acc, train_acc - test_acc])
+
+        data = pd.DataFrame.from_records(raw_data)
+        data = data.astype({'epoch': int})
+
+        ax = sns.lineplot(x='epoch',
+                          y='train',
+                          data=data, alpha=1.0, color=colors[i], linestyle='--')
+
+        ax = sns.lineplot(x='epoch',
+                          y='test',
+                          data=data, alpha=1.0, color=colors[i])
+
+        # ax = sns.lineplot(x='epoch',
+        #                   y='diff',
+        #                   data=data, color=colors[i], linestyle='--')
+
+        ax.set(xlabel='Epoch', ylabel='Accuracy [%]')
+
+    table_data = np.array(table_data)
+
+    temp = []
+
+    print("#####")
+    print(dataset_name)
+    print("#####")
+
+    with open(dataset_name + '.csv', 'w') as file:
+        writer = csv.writer(file, delimiter=' ', lineterminator='\n', )
+
+        for i, h in enumerate(hds):
+            train = table_data[i][:, 0]
+            test = table_data[i][:, 1]
+            diff = table_data[i][:, 2]
+
+            writer.writerow([str(h)])
+            writer.writerow(["###"])
+            writer.writerow([train.mean(), train.std()])
+            writer.writerow([test.mean(), test.std()])
+            writer.writerow([diff.mean(), diff.std()])
+
+            print(str(h))
+            print("###")
+            print(train.mean(), train.std())
+            print(test.mean(), test.std())
+            print(diff.mean(), diff.std())
+
+    plt.savefig("weights_" + str(dataset_name) + ".pdf")
+    plt.show()
