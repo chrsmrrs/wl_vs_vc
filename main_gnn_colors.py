@@ -16,7 +16,7 @@ num_layers = [1,2,3,4,5,6,7,8,9,10]
 lr = 0.001
 epochs = 500
 dataset = "ENZYMES"
-num_reps = 1
+num_reps = 5
 hd = 32
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -108,9 +108,10 @@ for l in num_layers:
         table_data[-1].append([train_acc, test_acc, train_acc - test_acc])
 
 
-print(table_data)
+a = np.array(table_data)
+for i, _ in num_layers:
+    print(a[i][:,0].mean(), a[i][:,1].mean(), a[i][:,2].mean())
 
-exit()
 
 #     # data = pd.DataFrame.from_records(raw_data)
 #     # data = data.astype({'epoch': int})
