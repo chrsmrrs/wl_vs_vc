@@ -9,14 +9,65 @@ import torch
 import torch.nn.functional as F
 from torch_geometric.datasets import TUDataset
 from torch_geometric.loader import DataLoader
-from torch_geometric.nn import MLP, global_add_pool, GraphConv
+from torch_geometric.nn import MLP, global_add_pool
+#GraphConv
+
+
+from typing import Tuple, Union
+
+from torch import Tensor
+from torch_sparse import SparseTensor, matmul
+
+from torch_geometric.nn.conv import MessagePassing
+from torch_geometric.nn.dense.linear import Linear
+from torch_geometric.typing import Adj, OptPairTensor, OptTensor, Size
+
+
+class GraphConv(MessagePassing):
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        aggr: str = 'add',
+        bias: bool = True,
+        **kwargs,
+    ):
+        super().__init__(aggr=aggr, **kwargs)
+
+        self.in_channels = in_channels
+        self.out_channels = out_channels
+
+        self.lin_rel = Linear(in_channels, out_channels, bias=bias)
+        self.lin_root = Linear(in_channels, out_channels, bias=False)
+
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        self.lin_rel.reset_parameters()
+        self.lin_root.reset_parameters()
+
+    def forward(self, x, edge_index):
+
+        out = self.propagate(edge_index, x=x)
+        out = self.lin_rel(out)
+
+        x_r = x
+        out += self.lin_root(x_r)
+
+        return out
+
+    def message(self, x_j):
+        return x_j
+
+    def message_and_aggregate(self, adj_t,x):
+        return matmul(adj_t, x, reduce=self.aggr)
 
 batch_size = 128
 num_layers = 5
 lr = 0.001
-epochs = 500
-dataset_name_list = ["PROTEINS"]
-num_reps = 10
+epochs = 5
+dataset_name_list = ["MUTAG"]
+num_reps = 3
 hds = [16, 64, 256]
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -52,7 +103,6 @@ for dataset_name in dataset_name_list:
     table_data = []
 
     for i, hc in enumerate(hds):
-        print(hc)
         table_data.append([])
         for it in range(num_reps):
 
