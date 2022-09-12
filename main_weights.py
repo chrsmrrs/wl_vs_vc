@@ -78,7 +78,7 @@ for dataset_name in dataset_name_list:
             dataset.transform = NormalizedDegree(mean, std)
 
 
-    colors = ["darkorange", "royalblue", "darkorchid"]
+    colors = ["darkorange", "royalblue", "darkorchid", "red"]
 
     raw_data = []
     table_data = []
