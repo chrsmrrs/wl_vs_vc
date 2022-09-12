@@ -11,6 +11,8 @@ from torch_geometric.datasets import TUDataset
 from torch_geometric.loader import DataLoader
 from torch_geometric.nn import MLP, global_add_pool
 from conv import GraphConv
+from torch_geometric.utils import degree
+
 
 batch_size = 128
 num_layers = 5
@@ -21,6 +23,17 @@ num_reps = 10
 hds = [16, 64, 256]
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+class NormalizedDegree(object):
+    def __init__(self, mean, std):
+        self.mean = mean
+        self.std = std
+
+    def __call__(self, data):
+        deg = degree(data.edge_index[0], dtype=torch.float)
+        deg = (deg - self.mean) / self.std
+        data.x = deg.view(-1, 1)
+        return 
 
 
 # Simple GNN layer from paper.
@@ -46,6 +59,23 @@ class Net(torch.nn.Module):
 for dataset_name in dataset_name_list:
     path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
     dataset = TUDataset(path, name=dataset_name).shuffle()
+
+    # One-hot degree if node labels are not available.
+    # The following if clause is taken from  https://github.com/rusty1s/pytorch_geometric/blob/master/benchmark/kernel/datasets.py.
+    if dataset.data.x is None:
+        max_degree = 0
+        degs = []
+        for data in dataset:
+            degs += [degree(data.edge_index[0], dtype=torch.long)]
+            max_degree = max(max_degree, degs[-1].max().item())
+
+        if max_degree < 1000:
+            dataset.transform = T.OneHotDegree(max_degree)
+        else:
+            deg = torch.cat(degs, dim=0).to(torch.float)
+            mean, std = deg.mean().item(), deg.std().item()
+            dataset.transform = NormalizedDegree(mean, std)
+
 
     colors = ["darkorange", "royalblue", "darkorchid"]
 
