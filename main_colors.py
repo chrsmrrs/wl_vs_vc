@@ -1,23 +1,26 @@
-import numpy as np
 import os.path as osp
-import torch
-import torch.nn.functional as F
+
+import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-
+import torch
+import torch.nn.functional as F
 from torch_geometric.datasets import TUDataset
 from torch_geometric.loader import DataLoader
 from torch_geometric.nn import MLP, global_add_pool, GraphConv
-import matplotlib.pyplot as plt
+
+import numpy as np
 
 batch_size = 128
 num_layers = 5
 lr = 0.001
 epochs = 500
-dataset = "MUTAG"
-num_reps = 5
+dataset = "ENZYMES"
+num_reps = 10
+hds = [16, 64, 256]
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 
 # Simple GNN layer from paper.
 class Net(torch.nn.Module):
@@ -26,7 +29,7 @@ class Net(torch.nn.Module):
 
         self.convs = torch.nn.ModuleList()
         for _ in range(nc):
-            self.convs.append(GraphConv(in_channels, hidden_channels, aggr = 'add', bias = True))
+            self.convs.append(GraphConv(in_channels, hidden_channels, aggr='add', bias=True))
             in_channels = hidden_channels
 
         # TODO: No dropout.
@@ -39,13 +42,18 @@ class Net(torch.nn.Module):
 
         return self.mlp(x)
 
+
 path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
 dataset = TUDataset(path, name=dataset).shuffle()
-# for hidden_channels in [8, 32, 128, 512]:
 
-colors = ["red", "green", "blue"]
+colors = ["darkorange", "royalblue", "darkorchid"]
+
 raw_data = []
-for i, hc in enumerate([8, 64]):
+table_data = []
+
+for i, hc in enumerate(hds):
+    print(hc)
+    table_data.append([])
     for it in range(num_reps):
 
         dataset.shuffle()
@@ -91,28 +99,47 @@ for i, hc in enumerate([8, 64]):
             train_acc = test(train_loader) * 100.0
             test_acc = test(test_loader) * 100.0
 
-            print(it ,epoch, train_acc, test_acc, train_acc - test_acc)
-            raw_data.append({'epoch': epoch, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it, 'hidden_channels': hc})
+            #print(it, epoch, train_acc, test_acc, train_acc - test_acc)
+            raw_data.append(
+                {'epoch': epoch, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it,
+                 'hidden_channels': hc})
+
+
+        table_data[-1].append([train_acc, test_acc, train_acc-test_acc])
 
     data = pd.DataFrame.from_records(raw_data)
     data = data.astype({'epoch': int})
 
+    ax = sns.lineplot(x = 'epoch',
+                 y = 'train',
+                 data=data, alpha = 1.0, color = colors[i], linestyle='--')
 
-    # ax = sns.lineplot(x = 'epoch',
-    #              y = 'train',
-    #              data=data, alpha = 0.3, color = colors[i])
-    #
-    # ax =sns.lineplot(x = 'epoch',
-    #              y = 'test',
-    #              data=data, alpha = 1.0, color = colors[i])
+    ax = sns.lineplot(x = 'epoch',
+                 y = 'test',
+                 data=data, alpha = 1.0, color = colors[i])
 
-    ax =sns.lineplot(x = 'epoch',
-                 y = 'diff',
-                 data=data, alpha = 0.1, color = colors[i], linestyle='--')
+    # ax = sns.lineplot(x='epoch',
+    #                   y='diff',
+    #                   data=data, color=colors[i], linestyle='--')
 
     ax.set(xlabel='Epoch', ylabel='Accuracy [%]')
 
-plt.savefig("proteins.pdf")
+table_data = np.array(table_data)
 
+#print(table_data)
+for i, h in enumerate(hds):
+    train = table_data[i][:, 0]
+    test = table_data[i][:, 1]
+    diff = table_data[i][:, 2]
+
+    print(h)
+    print(train.mean(), train.std())
+    print(test.mean(), test.std())
+    print(diff.mean(), diff.std())
+    print("###$")
+
+
+plt.savefig("weights_" + str(dataset) + ".pdf")
 plt.show()
+
 

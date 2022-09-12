@@ -115,6 +115,8 @@ def wl_simple_color_count(graph_db, h, degree=False, uniform=False):
         i, index in enumerate(graph_indices)]
 
     i = 0
+
+    color_counts = []
     while i < h:
         colors = []
 
@@ -142,14 +144,12 @@ def wl_simple_color_count(graph_db, h, degree=False, uniform=False):
         max_all = int(np.amax(colors) + 1)
 
         feature_vectors = [
-            np.concatenate((feature_vectors[i], np.bincount(colors[index[0]:index[1]], minlength=max_all))) for
+            np.bincount(colors[index[0]:index[1]], minlength=max_all) for
             i, index in enumerate(graph_indices)]
 
         i += 1
+        color_counts.append(feature_vectors.shape[0])
 
-    feature_vectors = np.array(feature_vectors)
+    return color_counts
 
-    if gram_matrix:
-        return np.dot(feature_vectors, feature_vectors.transpose())
-    else:
-        return feature_vectors
+
