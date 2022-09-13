@@ -109,7 +109,9 @@ for l in num_layers:
 
 a = np.array(table_data)
 for i, _ in enumerate(num_layers):
-    print(a[i][:,0].mean(), a[i][:,1].mean(), a[i][:,2].mean())
+    print("Layer " + str(i))
+    print(a[i][:, 0].mean(), a[i][:, 1].mean(), a[i][:, 2].mean())
+    print(a[i][:, 0].std(), a[i][:, 1].std(), a[i][:, 2].std())
 
 
 #     # data = pd.DataFrame.from_records(raw_data)
