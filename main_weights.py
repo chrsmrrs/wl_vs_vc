@@ -22,7 +22,8 @@ epochs = 500
 dataset_name_list = ["IMDB-BINARY", "IMDB-BINARY", "ENZYMES", "PTC_MR", "NCI1"]
 #dataset_name_list = ["ENZYMES"]
 num_reps = 10
-hds = [16, 64, 256, 1024]
+#hds = [16, 64, 256, 1024]
+hds = [16]
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -144,7 +145,7 @@ for dataset_name in dataset_name_list:
 
         ax = sns.lineplot(x='epoch',
                           y='train',
-                          data=data, alpha=1.0, color=colors[i], linestyle='--')
+                          data=data, alpha=0.3, color=colors[i])
 
         ax = sns.lineplot(x='epoch',
                           y='test',
