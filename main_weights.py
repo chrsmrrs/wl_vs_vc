@@ -77,7 +77,6 @@ for dataset_name in dataset_name_list:
             mean, std = deg.mean().item(), deg.std().item()
             dataset.transform = NormalizedDegree(mean, std)
 
-
     colors = ["darkorange", "royalblue", "darkorchid", "orangered"]
 
     raw_data = []

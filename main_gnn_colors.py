@@ -16,9 +16,7 @@ num_layers = [1,2,3,4,5,6,7,8,9,10]
 lr = 0.001
 epochs = 500
 dataset = "ENZYMES"
-num_reps = 5
-
-
+num_reps = 10
 hd = 32
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
