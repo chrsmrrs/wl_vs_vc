@@ -34,7 +34,6 @@ class Net(torch.nn.Module):
             self.convs.append(GraphConv(in_channels, hidden_channels, aggr='add', bias=True))
             in_channels = hidden_channels
 
-        # TODO: No dropout.
         self.mlp = MLP([hidden_channels, hidden_channels, out_channels])
 
     def forward(self, x, edge_index, batch):

@@ -19,11 +19,9 @@ batch_size = 128
 num_layers = 5
 lr = 0.001
 epochs = 500
-dataset_name_list = ["IMDB-BINARY", "IMDB-BINARY", "ENZYMES", "PTC_MR", "NCI1"]
-#dataset_name_list = ["ENZYMES"]
+dataset_name_list = ["ENZYMES", "IMDB-BINARY", "IMDB-BINARY", "ENZYMES", "PTC_MR", "NCI1"]
 num_reps = 10
-#hds = [16, 64, 256, 1024]
-hds = [16]
+hds = [16, 64, 256, 1024]
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -80,7 +78,7 @@ for dataset_name in dataset_name_list:
             dataset.transform = NormalizedDegree(mean, std)
 
 
-    colors = ["darkorange", "royalblue", "darkorchid", "red"]
+    colors = ["darkorange", "royalblue", "darkorchid", "orangered"]
 
     raw_data = []
     table_data = []
