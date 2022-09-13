@@ -19,8 +19,8 @@ batch_size = 128
 num_layers = 5
 lr = 0.001
 epochs = 500
-#dataset_name_list = ["IMDB-BINARY", "IMDB-BINARY", "ENZYMES", "PTC_MR", "NCI1"]
-dataset_name_list = ["ENZYMES"]
+dataset_name_list = ["IMDB-BINARY", "IMDB-BINARY", "ENZYMES", "PTC_MR", "NCI1"]
+#dataset_name_list = ["ENZYMES"]
 num_reps = 10
 hds = [16, 64, 256, 1024]
 

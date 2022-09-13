@@ -17,6 +17,8 @@ lr = 0.001
 epochs = 500
 dataset = "ENZYMES"
 num_reps = 5
+
+
 hd = 32
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -135,3 +137,4 @@ for i, _ in enumerate(num_layers):
 #
 # plt.savefig("weights_" + str(dataset) + ".pdf")
 # plt.show()
+
