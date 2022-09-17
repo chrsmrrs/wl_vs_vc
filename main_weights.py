@@ -157,7 +157,7 @@ for dataset_name in dataset_name_list:
         #                   y='diff',
         #                   data=data, color=colors[i], linestyle='--')
 
-        ax.set(xlabel='Epoch', ylabel= 'train - test accuracy [%]')
+        ax.set(xlabel='Epoch', ylabel= 'Train - test accuracy [%]')
 
     table_data = np.array(table_data)
 
