@@ -18,7 +18,7 @@ from conv import GraphConv
 batch_size = 128
 num_layers = 5
 lr = 0.001
-epochs = 50
+epochs = 500
 
 dataset_name_list = ["ENZYMES", "IMDB-BINARY", "NCI1", "PTC_MR", "REDDIT-BINARY"]
 num_reps = 10
