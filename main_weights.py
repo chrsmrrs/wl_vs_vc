@@ -7,23 +7,25 @@ import pandas as pd
 import seaborn as sns
 import torch
 import torch.nn.functional as F
+import torch_geometric.transforms as T
 from torch_geometric.datasets import TUDataset
 from torch_geometric.loader import DataLoader
 from torch_geometric.nn import MLP, global_add_pool
-import torch_geometric.transforms as T
-from conv import GraphConv
 from torch_geometric.utils import degree
 
+from conv import GraphConv
 
 batch_size = 128
 num_layers = 5
 lr = 0.001
-epochs = 500
-dataset_name_list = ["IMDB-BINARY", "IMDB-MULTI", "PTC_MR", "NCI1"]
+epochs = 10
+
+dataset_name_list = ["ENZYMES", "IMDB-BINARY", "NCI1", "PTC_MR", "REDDIT-BINARY"]
 num_reps = 10
 hds = [16, 64, 256, 1024]
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
 
 class NormalizedDegree(object):
     def __init__(self, mean, std):
@@ -63,7 +65,9 @@ for dataset_name in dataset_name_list:
 
     # One-hot degree if node labels are not available.
     # The following if clause is taken from  https://github.com/rusty1s/pytorch_geometric/blob/master/benchmark/kernel/datasets.py.
+    # TODO change to uniform
     if dataset.data.x is None:
+
         max_degree = 0
         degs = []
         for data in dataset:
@@ -97,7 +101,6 @@ for dataset_name in dataset_name_list:
             model = Net(dataset.num_features, hc, dataset.num_classes, num_layers).to(device)
             optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
-
             def train():
                 model.train()
 
@@ -111,7 +114,6 @@ for dataset_name in dataset_name_list:
                     optimizer.step()
                     total_loss += float(loss) * data.num_graphs
                 return total_loss / len(train_loader.dataset)
-
 
             @torch.no_grad()
             def test(loader):
@@ -130,7 +132,6 @@ for dataset_name in dataset_name_list:
                 train_acc = test(train_loader) * 100.0
                 test_acc = test(test_loader) * 100.0
 
-                # print(it, epoch, train_acc, test_acc, train_acc - test_acc)
                 raw_data.append(
                     {'epoch': epoch, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it,
                      'hidden_channels': hc})
@@ -139,6 +140,7 @@ for dataset_name in dataset_name_list:
 
         data = pd.DataFrame.from_records(raw_data)
         data = data.astype({'epoch': int})
+
 
         ax = sns.lineplot(x='epoch',
                           y='train',
@@ -163,7 +165,7 @@ for dataset_name in dataset_name_list:
     print("#####")
 
     with open(dataset_name + '.csv', 'w') as file:
-        writer = csv.writer(file, delimiter=' ', lineterminator='\n', )
+        writer = csv.writer(file, delimiter=' ', lineterminator='\n')
 
         for i, h in enumerate(hds):
             train = table_data[i][:, 0]
@@ -184,3 +186,5 @@ for dataset_name in dataset_name_list:
 
     plt.savefig("weights_" + str(dataset_name) + ".pdf")
     plt.show()
+
+    plt.close()
