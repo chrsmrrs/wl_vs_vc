@@ -18,7 +18,7 @@ from conv import GraphConv
 batch_size = 128
 num_layers = 5
 lr = 0.001
-epochs = 10
+epochs = 500
 
 dataset_name_list = ["ENZYMES", "IMDB-BINARY", "NCI1", "PTC_MR", "REDDIT-BINARY"]
 num_reps = 10
@@ -141,14 +141,17 @@ for dataset_name in dataset_name_list:
         data = pd.DataFrame.from_records(raw_data)
         data = data.astype({'epoch': int})
 
-
         ax = sns.lineplot(x='epoch',
-                          y='train',
-                          data=data, alpha=0.3, color=colors[i])
-
-        ax = sns.lineplot(x='epoch',
-                          y='test',
+                          y='diff',
                           data=data, alpha=1.0, color=colors[i])
+
+        # ax = sns.lineplot(x='epoch',
+        #                   y='train',
+        #                   data=data, alpha=0.3, color=colors[i])
+
+        # ax = sns.lineplot(x='epoch',
+        #                   y='test',
+        #                   data=data, alpha=1.0, color=colors[i])
 
         # ax = sns.lineplot(x='epoch',
         #                   y='diff',
