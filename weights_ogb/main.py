@@ -91,7 +91,7 @@ def main():
     device = torch.device("cuda:" + str(args.device)) if torch.cuda.is_available() else torch.device("cpu")
 
     ### automatic dataloading and splitting
-    dataset = PygGraphPropPredDataset(name = args.dataset)
+    dataset = PygGraphPropPredDataset("ogbg-moltox21")
 
     if args.feature == 'full':
         pass
