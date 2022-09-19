@@ -7,6 +7,8 @@ from torch_geometric.utils import degree
 
 import math
 
+
+
 ### GIN convolution along the graph structure
 class GINConv(MessagePassing):
     def __init__(self, emb_dim):
@@ -32,6 +34,7 @@ class GINConv(MessagePassing):
 
     def update(self, aggr_out):
         return aggr_out
+
 
 ### GCN convolution along the graph structure
 class GCNConv(MessagePassing):

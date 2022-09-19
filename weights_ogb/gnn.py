@@ -30,10 +30,8 @@ class GNN(torch.nn.Module):
             raise ValueError("Number of GNN layers must be greater than 1.")
 
         ### GNN to generate node embeddings
-        if virtual_node:
-            self.gnn_node = GNN_node_Virtualnode(num_layer, emb_dim, JK = JK, drop_ratio = drop_ratio, residual = residual, gnn_type = gnn_type)
-        else:
-            self.gnn_node = GNN_node(num_layer, emb_dim, JK = JK, drop_ratio = drop_ratio, residual = residual, gnn_type = gnn_type)
+
+        self.gnn_node = GNN_node(num_layer, emb_dim, JK = JK, drop_ratio = drop_ratio, residual = residual, gnn_type = gnn_type)
 
 
         ### Pooling function to generate whole-graph embeddings
