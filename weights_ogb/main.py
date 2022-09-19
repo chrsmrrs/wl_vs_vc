@@ -1,19 +1,23 @@
+import argparse
+
+import numpy as np
 import torch
-from torch_geometric.loader import DataLoader
 import torch.optim as optim
-import torch.nn.functional as F
+from ogb.graphproppred import PygGraphPropPredDataset, Evaluator
+from torch_geometric.loader import DataLoader
+from tqdm import tqdm
+
 from gnn import GNN
 
-from tqdm import tqdm
-import argparse
-import time
-import numpy as np
-
-### importing OGB
-from ogb.graphproppred import PygGraphPropPredDataset, Evaluator
+dataset_name = "ogbg-moltox21"
+num_epochs = 100
+batch_size = 128
+num_layers = 5
+dim = 64
 
 cls_criterion = torch.nn.BCEWithLogitsLoss()
 reg_criterion = torch.nn.MSELoss()
+
 
 def train(model, device, loader, optimizer, task_type):
     model.train()
@@ -35,6 +39,7 @@ def train(model, device, loader, optimizer, task_type):
             loss.backward()
             optimizer.step()
 
+
 def eval(model, device, loader, evaluator):
     model.eval()
     y_true = []
@@ -52,8 +57,8 @@ def eval(model, device, loader, evaluator):
             y_true.append(batch.y.view(pred.shape).detach().cpu())
             y_pred.append(pred.detach().cpu())
 
-    y_true = torch.cat(y_true, dim = 0).numpy()
-    y_pred = torch.cat(y_pred, dim = 0).numpy()
+    y_true = torch.cat(y_true, dim=0).numpy()
+    y_pred = torch.cat(y_pred, dim=0).numpy()
 
     input_dict = {"y_true": y_true, "y_pred": y_pred}
 
@@ -61,50 +66,33 @@ def eval(model, device, loader, evaluator):
 
 
 def main():
-    print("@@@@")
-
-    # Training settings
-    parser = argparse.ArgumentParser(description='GNN baselines on ogbgmol* data with Pytorch Geometrics')
-
-    parser.add_argument('--feature', type=str, default="full",
-                        help='full feature or simple feature')
-    parser.add_argument('--filename', type=str, default="",
-                        help='filename to output result (default: )')
-    args = parser.parse_args()
-
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    dataset = PygGraphPropPredDataset(dataset_name)
 
-    ### automatic dataloading and splitting
-    dataset = PygGraphPropPredDataset("ogbg-moltox21")
-
-    if args.feature == 'full':
-        pass
-    elif args.feature == 'simple':
-        print('using simple feature')
-        # only retain the top two node/edge features
-        dataset.data.x = dataset.data.x[:,:2]
-        dataset.data.edge_attr = dataset.data.edge_attr[:,:2]
+    # if args.feature == 'full':
+    #     pass
+    # elif args.feature == 'simple':
+    #     print('using simple feature')
+    #     # only retain the top two node/edge features
+    #     dataset.data.x = dataset.data.x[:,:2]
+    #     dataset.data.edge_attr = dataset.data.edge_attr[:,:2]
 
     split_idx = dataset.get_idx_split()
 
-    ### automatic evaluator. takes dataset name as input
-    evaluator = Evaluator(args.dataset)
+    evaluator = Evaluator(dataset_name)
 
-    train_loader = DataLoader(dataset[split_idx["train"]], batch_size=32, shuffle=True, num_workers = 0)
-    valid_loader = DataLoader(dataset[split_idx["valid"]], batch_size=32, shuffle=False, num_workers = 0)
-    test_loader = DataLoader(dataset[split_idx["test"]], batch_size=32, shuffle=False, num_workers = 0)
+    train_loader = DataLoader(dataset[split_idx["train"]], batch_size=batch_size, shuffle=True, num_workers=0)
+    valid_loader = DataLoader(dataset[split_idx["valid"]], batch_size=batch_size, shuffle=False, num_workers=0)
+    test_loader = DataLoader(dataset[split_idx["test"]], batch_size=batch_size, shuffle=False, num_workers=0)
 
-
-    model = GNN(gnn_type = 'gin', num_tasks = dataset.num_tasks, num_layer = 5, emb_dim = 300, drop_ratio = 0.5, virtual_node = False).to(device)
-
-
+    model = GNN(num_tasks=dataset.num_tasks, num_layer=num_layers, emb_dim=dim).to(device)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
 
     valid_curve = []
     test_curve = []
     train_curve = []
 
-    for epoch in range(1, args.epochs + 1):
+    for epoch in range(1, num_epochs + 1):
         print("=====Epoch {}".format(epoch))
         print('Training...')
         train(model, device, train_loader, optimizer, dataset.task_type)
@@ -131,11 +119,9 @@ def main():
     print('Best validation score: {}'.format(valid_curve[best_val_epoch]))
     print('Test score: {}'.format(test_curve[best_val_epoch]))
 
-    if not args.filename == '':
-        torch.save({'Val': valid_curve[best_val_epoch], 'Test': test_curve[best_val_epoch], 'Train': train_curve[best_val_epoch], 'BestTrain': best_train}, args.filename)
+    # if not args.filename == '':
+    #    torch.save({'Val': valid_curve[best_val_epoch], 'Test': test_curve[best_val_epoch], 'Train': train_curve[best_val_epoch], 'BestTrain': best_train}, args.filename)
 
 
 if __name__ == "__main__":
-    print("@@@@")
-
     main()
