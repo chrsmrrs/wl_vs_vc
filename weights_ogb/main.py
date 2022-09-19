@@ -10,7 +10,7 @@ from tqdm import tqdm
 from gnn import GNN
 
 dataset_name = "ogbg-moltox21"
-num_epochs = 100
+num_epochs = 500
 batch_size = 128
 num_layers = 5
 dim = 16
