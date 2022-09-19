@@ -9,11 +9,11 @@ from tqdm import tqdm
 
 from gnn import GNN
 
-dataset_name = "ogbg-moltox21"
+dataset_name = "ogbg-moltoxcast"
 num_epochs = 500
 batch_size = 128
 num_layers = 5
-dim = 1024
+dim = 32
 
 cls_criterion = torch.nn.BCEWithLogitsLoss()
 reg_criterion = torch.nn.MSELoss()
@@ -72,10 +72,12 @@ def main():
     # if args.feature == 'full':
     #     pass
     # elif args.feature == 'simple':
-    #     print('using simple feature')
-    #     # only retain the top two node/edge features
-    #     dataset.data.x = dataset.data.x[:,:2]
-    #     dataset.data.edge_attr = dataset.data.edge_attr[:,:2]
+
+    # TODO: simple features
+    print('using simple feature')
+    # only retain the top two node/edge features
+    dataset.data.x = dataset.data.x[:,:2]
+    dataset.data.edge_attr = dataset.data.edge_attr[:,:2]
 
     split_idx = dataset.get_idx_split()
 
@@ -118,6 +120,10 @@ def main():
     print('Finished training!')
     print('Best validation score: {}'.format(valid_curve[best_val_epoch]))
     print('Test score: {}'.format(test_curve[best_val_epoch]))
+
+    print("###")
+    print(np.array(test_curve)[-1])
+    print(np.array(train_curve)[-1])
 
     # if not args.filename == '':
     #    torch.save({'Val': valid_curve[best_val_epoch], 'Test': test_curve[best_val_epoch], 'Train': train_curve[best_val_epoch], 'BestTrain': best_train}, args.filename)
