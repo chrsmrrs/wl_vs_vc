@@ -68,7 +68,6 @@ class GNN_node(torch.nn.Module):
 
         ###List of GNNs
         self.convs = torch.nn.ModuleList()
-        self.batch_norms = torch.nn.ModuleList()
 
         for layer in range(num_layer):
             self.convs.append(GraphConv(emb_dim))
