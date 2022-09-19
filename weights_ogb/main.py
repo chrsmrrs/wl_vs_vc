@@ -13,7 +13,7 @@ dataset_name = "ogbg-moltox21"
 num_epochs = 500
 batch_size = 128
 num_layers = 5
-dim = 16
+dim = 32
 
 cls_criterion = torch.nn.BCEWithLogitsLoss()
 reg_criterion = torch.nn.MSELoss()
