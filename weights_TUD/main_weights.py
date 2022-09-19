@@ -20,7 +20,7 @@ num_layers = 5
 lr = 0.001
 epochs = 500
 
-dataset_name_list = ["MUTAG", "ENZYMES", "IMDB-BINARY", "NCI1", "NCI109", "DBLP_v1"]
+dataset_name_list = ["DBLP_v1", "MUTAG", "ENZYMES", "IMDB-BINARY", "NCI1", "NCI109"]
 num_reps = 10
 hds = [16, 64, 256, 1024]
 
