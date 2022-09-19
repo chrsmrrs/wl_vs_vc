@@ -56,10 +56,6 @@ class GNN_node(torch.nn.Module):
     def __init__(self, num_layer, emb_dim):
         super(GNN_node, self).__init__()
         self.num_layer = num_layer
-        #self.drop_ratio = drop_ratio
-        #self.JK = JK
-        ### add residual connection or not
-        #self.residual = residual
 
         if self.num_layer < 2:
             raise ValueError("Number of GNN layers must be greater than 1.")
