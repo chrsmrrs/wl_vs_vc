@@ -6,7 +6,7 @@ from torch_geometric.nn import MessagePassing
 from torch_geometric.nn import global_max_pool, GlobalAttention, Set2Set
 from torch_geometric.nn import global_mean_pool, global_add_pool
 from torch_geometric.utils import degree
-
+from torch_geometric.nn import MLP
 full_atom_feature_dims = get_atom_feature_dims()
 full_bond_feature_dims = get_bond_feature_dims()
 
@@ -143,6 +143,7 @@ class GNN(torch.nn.Module):
         #     self.graph_pred_linear = torch.nn.Linear(2 * self.emb_dim, self.num_tasks)
         # else:
         self.graph_pred_linear = torch.nn.Linear(self.emb_dim, self.num_tasks)
+        self.mlp = MLP([self.emb_dim, self.emb_dim, self.num_tasks])
 
     def forward(self, batched_data):
         h_node = self.gnn_node(batched_data)

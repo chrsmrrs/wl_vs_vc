@@ -10,7 +10,7 @@ from tqdm import tqdm
 from gnn import GNN
 
 dataset_name = "ogbg-moltoxcast"
-num_epochs = 500
+num_epochs = 1000
 batch_size = 128
 num_layers = 5
 dim = 32
@@ -69,10 +69,6 @@ def eval(model, device, loader, evaluator):
 def main():
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     dataset = PygGraphPropPredDataset(dataset_name)
-
-    # if args.feature == 'full':
-    #     pass
-    # elif args.feature == 'simple':
 
     # TODO: simple features
     print('using simple feature')
