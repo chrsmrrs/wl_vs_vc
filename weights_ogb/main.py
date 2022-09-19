@@ -14,7 +14,7 @@ num_epochs = 500
 batch_size = 128
 num_layers = 5
 dim = 32
-dim = 1024
+dim = 256
 
 cls_criterion = torch.nn.BCEWithLogitsLoss()
 reg_criterion = torch.nn.MSELoss()
