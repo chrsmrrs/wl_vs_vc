@@ -171,4 +171,4 @@ def kernel_svm_evaluation(all_matrices, classes, num_repetitions=10,
         test_accuracies_all.append(float(np.array(test_accuracies).mean()))
         train_accuracies_all.append(float(np.array(train_accuracies).mean()))
 
-        return (np.array(test_accuracies_all).mean(), np.array(train_accuracies_all).mean())
+        return (np.array(train_accuracies_all).mean(), np.array(test_accuracies_all).mean())
