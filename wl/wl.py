@@ -79,8 +79,7 @@ def wl_simple(graph_db, h, degree=False, uniform=False, gram_matrix=True):
         return feature_vectors
 
 
-def wl_simple_color_count(dataset, h, degree=False, uniform=False):
-    graph_db, _  = read_txt(dataset)
+def wl_simple_color_count(graph_db, h, degree=False, uniform=False):
 
     # Create one empty feature vector for each graph.
     feature_vectors = []
@@ -116,6 +115,11 @@ def wl_simple_color_count(dataset, h, degree=False, uniform=False):
     i = 0
 
     color_counts = []
+    feature_vectors = np.array([
+        np.concatenate((feature_vectors[i], np.bincount(colors[index[0]:index[1]], minlength=max_all))) for
+        i, index in enumerate(graph_indices)])
+
+    color_counts.append(feature_vectors.shape[1])
     while i < h:
         colors = []
 
