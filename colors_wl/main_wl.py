@@ -2,7 +2,7 @@ import numpy as np
 
 from auxiliarymethods.auxiliary_methods import read_txt
 from auxiliarymethods.svm import kernel_svm_evaluation, normalize_gram_matrix
-from wl import wl_simple, wl_simple_color_count
+from colors_wl import wl_simple, wl_simple_color_count
 
 datasets = [["PTC_FM", True]]
 
