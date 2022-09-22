@@ -18,7 +18,7 @@ from conv import GraphConv
 batch_size = 128
 
 # TODO More layers?
-num_layers = 5
+num_layers = 10
 lr = 0.001
 epochs = 500
 
