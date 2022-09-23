@@ -20,8 +20,7 @@ num_layers = 5
 lr = 0.001
 epochs = 500
 
-dataset_name_list = ["Mutagenicity", "DD"]
-# TODO change
+dataset_name_list = ["Mutagenicity", "MCF-7", "DD",]
 num_reps = 3
 hds = [16, 64, 256, 1024]
 
