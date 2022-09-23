@@ -20,8 +20,8 @@ num_layers = 5
 lr = 0.001
 epochs = 500
 
-dataset_name_list = ["Mutagenicity", "MCF-7", "DD",]
-num_reps = 3
+dataset_name_list = ["Mutagenicity", "MCF-7", "DD"]
+num_reps = 10
 hds = [16, 64, 256, 1024]
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
