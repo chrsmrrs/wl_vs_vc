@@ -20,7 +20,7 @@ num_layers = 5
 lr = 0.001
 epochs = 500
 
-dataset_name_list = ["DD"]
+dataset_name_list = ["Mutagenicity", "DD"]
 # TODO change
 num_reps = 3
 hds = [16, 64, 256, 1024]
@@ -67,20 +67,20 @@ for dataset_name in dataset_name_list:
     # One-hot degree if node labels are not available.
     # The following if clause is taken from  https://github.com/rusty1s/pytorch_geometric/blob/master/benchmark/kernel/datasets.py.
     # TODO change to uniform
-    if dataset.data.x is None:
-
-        max_degree = 0
-        degs = []
-        for data in dataset:
-            degs += [degree(data.edge_index[0], dtype=torch.long)]
-            max_degree = max(max_degree, degs[-1].max().item())
-
-        if max_degree < 1000:
-            dataset.transform = T.OneHotDegree(max_degree)
-        else:
-            deg = torch.cat(degs, dim=0).to(torch.float)
-            mean, std = deg.mean().item(), deg.std().item()
-            dataset.transform = NormalizedDegree(mean, std)
+    # if dataset.data.x is None:
+    #
+    #     max_degree = 0
+    #     degs = []
+    #     for data in dataset:
+    #         degs += [degree(data.edge_index[0], dtype=torch.long)]
+    #         max_degree = max(max_degree, degs[-1].max().item())
+    #
+    #     if max_degree < 1000:
+    #         dataset.transform = T.OneHotDegree(max_degree)
+    #     else:
+    #         deg = torch.cat(degs, dim=0).to(torch.float)
+    #         mean, std = deg.mean().item(), deg.std().item()
+    #         dataset.transform = NormalizedDegree(mean, std)
 
     colors = ["darkorange", "royalblue", "darkorchid", "limegreen"]
 
