@@ -16,14 +16,13 @@ from torch_geometric.utils import degree
 from conv import GraphConv
 
 batch_size = 128
-
-# TODO More layers?
 num_layers = 5
 lr = 0.001
 epochs = 500
 
-dataset_name_list = ["PTC_FM"]
-num_reps = 10
+dataset_name_list = ["DD"]
+# TODO change
+num_reps = 3
 hds = [16, 64, 256, 1024]
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
