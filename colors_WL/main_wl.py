@@ -8,7 +8,7 @@ from wl import wl_simple, wl_simple_color_count
 datasets = [["ENZYMES", True], ["MCF-7", True], ["MOLT", True], ["Mutagenicity", True], ["NCI1", True], ["NCI109", True]]
 
 with open('results.csv', 'w') as file:
-    writer = csv.writer(file, delimiter=' ', lineterminator='\n')
+    writer = csv.writer(file, delimiter=',', lineterminator='\n')
     for dataset, labels in datasets:
         writer.writerow([dataset])
 
@@ -28,4 +28,4 @@ with open('results.csv', 'w') as file:
             train, train_std, test, test_std = kernel_svm_evaluation(gram_matrices, classes, num_repetitions=10)
 
             print(dataset, str(i), train, train_std, test, test_std, train-test, color_count[i])
-            writer.writerow([dataset, str(i), train, train_std, test, test_std, train-test, color_count[i]])
+            writer.writerow([dataset, str(i), train, train_std, test, test_std, train - test, color_count[i]])

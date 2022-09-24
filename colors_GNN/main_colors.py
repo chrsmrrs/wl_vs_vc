@@ -17,14 +17,14 @@ from matplotlib.ticker import FormatStrFormatter
 
 
 batch_size = 128
-num_layers = 5
+
 lr = 0.001
 epochs = 500
 
 dataset_name_list = ["ENZYMES", "MCF-7", "MOLT", "Mutagenicity", "NCI1", "NCI109"]
 num_reps = 10
-hds = [4, 16, 256, 1024]
-
+hc = 64
+num_layers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -64,16 +64,17 @@ class Net(torch.nn.Module):
 
         return self.mlp(x)
 
-    for dataset_name in dataset_name_list:
-        path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
-        dataset = TUDataset(path, name=dataset_name).shuffle()
 
-        colors = sns.color_palette()  # ["darkorange", "royalblue", "darkorchid", "limegreen"]
+for dataset_name in dataset_name_list:
+    path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
+    dataset = TUDataset(path, name=dataset_name).shuffle()
 
-        raw_data = []
-        table_data = []
+    colors = sns.color_palette() #["darkorange", "royalblue", "darkorchid", "limegreen"]
 
-    for i, hc in enumerate(hds):
+    raw_data = []
+    table_data = []
+
+    for i, l in enumerate(num_layers):
         table_data.append([])
         for it in range(num_reps):
 
@@ -85,7 +86,7 @@ class Net(torch.nn.Module):
             test_dataset = dataset[:len(dataset) // 10]
             test_loader = DataLoader(test_dataset, batch_size)
 
-            model = Net(dataset.num_features, hc, dataset.num_classes, num_layers).to(device)
+            model = Net(dataset.num_features, hc, dataset.num_classes, l).to(device)
             optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
 
@@ -129,13 +130,13 @@ class Net(torch.nn.Module):
         data = pd.DataFrame.from_records(raw_data)
         data = data.astype({'epoch': int})
 
-        ax = sns.lineplot(x='epoch',
-                          y='diff',
-                          data=data, alpha=1.0, color=colors[i], label=str(hc))
-
-        ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
-
-        ax.set(title = dataset_name, xlabel='Epoch', ylabel='Train - test accuracy [%]')
+        # ax = sns.lineplot(x='epoch',
+        #                   y='diff',
+        #                   data=data, alpha=1.0, color=colors[i], label=str(hc))
+        #
+        # ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
+        #
+        # ax.set(title = dataset_name, xlabel='Epoch', ylabel='Train - test accuracy [%]')
 
 
     table_data = np.array(table_data)

@@ -1,18 +1,14 @@
 import os.path as osp
 
-import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
 import torch
 import torch.nn.functional as F
 from torch_geometric.datasets import TUDataset
 from torch_geometric.loader import DataLoader
 from torch_geometric.nn import MLP, global_add_pool, GraphConv
 
-import numpy as np
-
 batch_size = 128
-num_layers = [0,1,2,3,4,5,6,7,8,9,10]
+num_layers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 lr = 0.001
 epochs = 500
 datasets = ["ENZYMES", "MCF-7", "MOLT", "Mutagenicity", "NCI1", "NCI109"]
@@ -44,8 +40,8 @@ class Net(torch.nn.Module):
 
         return self.mlp(x)
 
-path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
 
+path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
 
 raw_data = []
 table_data = []
@@ -68,6 +64,7 @@ for dataset in datasets:
 
             model = Net(dataset.num_features, hd, dataset.num_classes, l).to(device)
             optimizer = torch.optim.Adam(model.parameters(), lr=lr)
+
 
             def train():
                 model.train()
@@ -101,10 +98,7 @@ for dataset in datasets:
                 train_acc = test(train_loader) * 100.0
                 test_acc = test(test_loader) * 100.0
 
-            raw_data.append({'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it,'layer':l})
-        
+            raw_data.append({'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it, 'layer': l})
+
     data = pd.DataFrame.from_records(raw_data)
-    data.to_csv(dataset_name+'_relu')
-
-
-
+    data.to_csv(dataset_name + '_relu')

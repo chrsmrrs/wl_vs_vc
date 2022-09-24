@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
-dataset_list = ['ENZYMES','PROTEINS', 'NCI1', 'PTC_MR']
+dataset_list = ["ENZYMES", "MCF-7", "MOLT", "Mutagenicity", "NCI1", "NCI109"]
 dataset_name = dataset_list[0] #select dataset
 wl_colors = np.loadtxt("colors/wl_"+dataset_name+"_hd32.txt")
 data_all = pd.read_csv('datasets/all_data_'+dataset_name)

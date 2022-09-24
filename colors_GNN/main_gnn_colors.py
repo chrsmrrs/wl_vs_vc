@@ -8,14 +8,15 @@ import torch.nn.functional as F
 from torch_geometric.datasets import TUDataset
 from torch_geometric.loader import DataLoader
 from torch_geometric.nn import MLP, global_add_pool, GraphConv
-
+import csv
 import numpy as np
+
 
 batch_size = 128
 num_layers = [0,1,2,3,4,5,6,7,8,9,10]
 lr = 0.001
 epochs = 500
-dataset = "ENZYMES"
+dataset_name_list = ["ENZYMES", "MCF-7", "MOLT", "Mutagenicity", "NCI1", "NCI109"]
 num_reps = 10
 hd = 64
 
@@ -44,77 +45,72 @@ class Net(torch.nn.Module):
 
         return self.mlp(x)
 
+for dataset_name in dataset_name_list:
+    path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
+    dataset = TUDataset(path, name=dataset_name).shuffle()
 
-path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
-dataset = TUDataset(path, name=dataset).shuffle()
+    raw_data = []
+    table_data = []
 
-colors = ["darkorange", "royalblue", "darkorchid"]
+    with open(dataset_name+'.csv', 'w') as file:
+        writer = csv.writer(file, delimiter=',', lineterminator='\n')
+        for l in num_layers:
+            print(l)
+            table_data.append([])
+            for it in range(num_reps):
 
-raw_data = []
-table_data = []
+                dataset.shuffle()
 
-for l in num_layers:
-    print(l)
-    table_data.append([])
-    for it in range(num_reps):
+                train_dataset = dataset[len(dataset) // 10:]
+                train_loader = DataLoader(train_dataset, batch_size, shuffle=True)
 
-        dataset.shuffle()
+                test_dataset = dataset[:len(dataset) // 10]
+                test_loader = DataLoader(test_dataset, batch_size)
 
-        train_dataset = dataset[len(dataset) // 10:]
-        train_loader = DataLoader(train_dataset, batch_size, shuffle=True)
+                model = Net(dataset.num_features, hd, dataset.num_classes, l).to(device)
+                optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
-        test_dataset = dataset[:len(dataset) // 10]
-        test_loader = DataLoader(test_dataset, batch_size)
+                def train():
+                    model.train()
 
-        model = Net(dataset.num_features, hd, dataset.num_classes, l).to(device)
-        optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-
-        def train():
-            model.train()
-
-            total_loss = 0
-            for data in train_loader:
-                data = data.to(device)
-                optimizer.zero_grad()
-                out = model(data.x, data.edge_index, data.batch)
-                loss = F.cross_entropy(out, data.y)
-                loss.backward()
-                optimizer.step()
-                total_loss += float(loss) * data.num_graphs
-            return total_loss / len(train_loader.dataset)
-
-
-        @torch.no_grad()
-        def test(loader):
-            model.eval()
-
-            total_correct = 0
-            for data in loader:
-                data = data.to(device)
-                pred = model(data.x, data.edge_index, data.batch).argmax(dim=-1)
-                total_correct += int((pred == data.y).sum())
-            return total_correct / len(loader.dataset)
+                    total_loss = 0
+                    for data in train_loader:
+                        data = data.to(device)
+                        optimizer.zero_grad()
+                        out = model(data.x, data.edge_index, data.batch)
+                        loss = F.cross_entropy(out, data.y)
+                        loss.backward()
+                        optimizer.step()
+                        total_loss += float(loss) * data.num_graphs
+                    return total_loss / len(train_loader.dataset)
 
 
-        for epoch in range(1, epochs + 1):
-            loss = train()
-            train_acc = test(train_loader) * 100.0
-            test_acc = test(test_loader) * 100.0
+                @torch.no_grad()
+                def test(loader):
+                    model.eval()
 
-            #print(it, epoch, train_acc, test_acc, train_acc - test_acc)
-            #raw_data.append(
-            #    {'epoch': epoch, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it,
-            #     'hidden_channels': hd})
-
-        #print([train_acc, test_acc, train_acc - test_acc])
-        #table_data[-1].append([train_acc, test_acc, train_acc - test_acc])
+                    total_correct = 0
+                    for data in loader:
+                        data = data.to(device)
+                        pred = model(data.x, data.edge_index, data.batch).argmax(dim=-1)
+                        total_correct += int((pred == data.y).sum())
+                    return total_correct / len(loader.dataset)
 
 
-a = np.array(table_data)
-for i, _ in enumerate(num_layers):
-    print("Layer " + str(i))
-    print(a[i][:, 0].mean(), a[i][:, 1].mean(), a[i][:, 2].mean())
-    print(a[i][:, 0].std(), a[i][:, 1].std(), a[i][:, 2].std())
+                for epoch in range(1, epochs + 1):
+                    loss = train()
+                    train_acc = test(train_loader) * 100.0
+                    test_acc = test(test_loader) * 100.0
+
+                    #print(it, epoch, train_acc, test_acc, train_acc - test_acc)
+                    #raw_data.append(
+                    #    {'epoch': epoch, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it,
+                    #     'hidden_channels': hd})
+
+            writer.writerow([dataset, str(l), train, test, train - test])
+
+
+
 
 
 
