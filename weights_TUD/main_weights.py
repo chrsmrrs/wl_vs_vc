@@ -23,7 +23,8 @@ epochs = 500
 
 dataset_name_list = ["ENZYMES", "MCF-7", "MOLT", "Mutagenicity", "NCI1", "NCI109"]
 num_reps = 10
-hds = [4, 16, 64, 256, 1024]
+hds = [4, 16, 256, 1024]
+
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -131,9 +132,10 @@ for dataset_name in dataset_name_list:
 
         ax = sns.lineplot(x='epoch',
                           y='diff',
-                          data=data, alpha=1.0, color=colors[i])
+                          data=data, alpha=1.0, color=colors[i], label=str(hc))
 
-        ax.xwaxis.set_major_formatter(FormatStrFormatter('%d'))
+        ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
+
         ax.set(title = dataset_name, xlabel='Epoch', ylabel='Train - test accuracy [%]')
 
 
@@ -166,6 +168,9 @@ for dataset_name in dataset_name_list:
             print(diff.mean(), diff.std())
 
     plt.savefig("weights_" + str(dataset_name) + ".pdf")
+
+    plt.legend(loc='lower right')
+
     plt.show()
 
     plt.close()
