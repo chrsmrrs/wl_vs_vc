@@ -28,5 +28,4 @@ with open('results.csv', 'w') as file:
             train, train_std, test, test_std = kernel_svm_evaluation(gram_matrices, classes, num_repetitions=10)
 
             print(dataset, str(i), train, train_std, test, test_std, train-test, color_count[i])
-
             writer.writerow([dataset, str(i), train, train_std, test, test_std, train-test, color_count[i]])
