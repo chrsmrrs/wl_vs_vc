@@ -18,7 +18,6 @@ with open('results.csv', 'w') as file:
         graph_db, _ = read_txt(dataset)
         color_count = wl_simple_color_count(graph_db, h=10, degree=False, uniform=not labels)
 
-
         for i in range(0, 11):
             graph_db, classes = read_txt(dataset)
             gram_matrices = []

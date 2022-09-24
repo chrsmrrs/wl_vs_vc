@@ -32,6 +32,7 @@ def wl_simple(graph_db, h, degree=False, uniform=False, gram_matrix=True):
         for v in g.vertices():
             colors.append(g.vp.nl[v])
 
+    _, colors = np.unique(colors, return_inverse=True)
     max_all = int(np.amax(colors) + 1)
 
     feature_vectors = [
@@ -110,6 +111,7 @@ def wl_simple_color_count(graph_db, h, degree=False, uniform=False):
         for v in g.vertices():
             colors.append(g.vp.nl[v])
 
+    _, colors = np.unique(colors, return_inverse=True)
     max_all = int(np.amax(colors) + 1)
 
     i = 0
@@ -137,12 +139,10 @@ def wl_simple_color_count(graph_db, h, degree=False, uniform=False):
 
         # Assign new colors to vertices.
         q = 0
-        cl = []
         for g in graph_db:
             for v in g.vertices():
                 g.vp.nl[v] = colors[q]
                 q += 1
-                cl.append(g.vp.nl[v])
 
         max_all = int(np.amax(colors) + 1)
 
