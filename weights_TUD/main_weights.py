@@ -13,6 +13,8 @@ from torch_geometric.nn import MLP, global_add_pool
 from torch_geometric.utils import degree
 
 from conv import GraphConv
+from matplotlib.ticker import FormatStrFormatter
+
 
 batch_size = 128
 num_layers = 5
@@ -22,6 +24,7 @@ epochs = 500
 dataset_name_list = ["ENZYMES", "MCF-7", "MOLT", "Mutagenicity", "NCI1", "NCI109"]
 num_reps = 10
 hds = [4, 16, 64, 256, 1024]
+
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
@@ -48,7 +51,10 @@ class Net(torch.nn.Module):
             self.convs.append(GraphConv(in_channels, hidden_channels, aggr='add', bias=True))
             in_channels = hidden_channels
 
-        self.mlp = MLP([hidden_channels, hidden_channels, out_channels])
+        if nc != 0:
+            self.mlp = MLP([hidden_channels, hidden_channels, out_channels])
+        else:
+            self.mlp = MLP([in_channels, hidden_channels, out_channels])
 
     def forward(self, x, edge_index, batch):
         for conv in self.convs:
@@ -62,25 +68,7 @@ for dataset_name in dataset_name_list:
     path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
     dataset = TUDataset(path, name=dataset_name).shuffle()
 
-    # One-hot degree if node labels are not available.
-    # The following if clause is taken from  https://github.com/rusty1s/pytorch_geometric/blob/master/benchmark/kernel/datasets.py.
-    # TODO change to uniform
-    # if dataset.data.x is None:
-    #
-    #     max_degree = 0
-    #     degs = []
-    #     for data in dataset:
-    #         degs += [degree(data.edge_index[0], dtype=torch.long)]
-    #         max_degree = max(max_degree, degs[-1].max().item())
-    #
-    #     if max_degree < 1000:
-    #         dataset.transform = T.OneHotDegree(max_degree)
-    #     else:
-    #         deg = torch.cat(degs, dim=0).to(torch.float)
-    #         mean, std = deg.mean().item(), deg.std().item()
-    #         dataset.transform = NormalizedDegree(mean, std)
-
-    colors = ["darkorange", "royalblue", "darkorchid", "limegreen"]
+    colors = sns.color_palette() #["darkorange", "royalblue", "darkorchid", "limegreen"]
 
     raw_data = []
     table_data = []
@@ -145,7 +133,9 @@ for dataset_name in dataset_name_list:
                           y='diff',
                           data=data, alpha=1.0, color=colors[i])
 
-        ax.set(xlabel='Epoch', ylabel='Train - test accuracy [%]')
+        ax.xwaxis.set_major_formatter(FormatStrFormatter('%d'))
+        ax.set(title = dataset_name, xlabel='Epoch', ylabel='Train - test accuracy [%]')
+
 
     table_data = np.array(table_data)
 

@@ -12,7 +12,7 @@ from torch_geometric.nn import MLP, global_add_pool, GraphConv
 import numpy as np
 
 batch_size = 128
-num_layers = [1,2,3,4,5,6,7,8,9,10]
+num_layers = [0,1,2,3,4,5,6,7,8,9,10]
 lr = 0.001
 epochs = 500
 dataset = "ENZYMES"
@@ -32,7 +32,10 @@ class Net(torch.nn.Module):
             self.convs.append(GraphConv(in_channels, hidden_channels, aggr='add', bias=True))
             in_channels = hidden_channels
 
-        self.mlp = MLP([hidden_channels, hidden_channels, out_channels])
+        if nc != 0:
+            self.mlp = MLP([hidden_channels, hidden_channels, out_channels])
+        else:
+            self.mlp = MLP([in_channels, hidden_channels, out_channels])
 
     def forward(self, x, edge_index, batch):
         for conv in self.convs:
@@ -103,8 +106,8 @@ for l in num_layers:
             #    {'epoch': epoch, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it,
             #     'hidden_channels': hd})
 
-        print([train_acc, test_acc, train_acc - test_acc])
-        table_data[-1].append([train_acc, test_acc, train_acc - test_acc])
+        #print([train_acc, test_acc, train_acc - test_acc])
+        #table_data[-1].append([train_acc, test_acc, train_acc - test_acc])
 
 
 a = np.array(table_data)
@@ -114,26 +117,5 @@ for i, _ in enumerate(num_layers):
     print(a[i][:, 0].std(), a[i][:, 1].std(), a[i][:, 2].std())
 
 
-#     # data = pd.DataFrame.from_records(raw_data)
-#     # data = data.astype({'epoch': int})
-#     #
-#     # ax = sns.lineplot(x = 'epoch',
-#     #              y = 'train',
-#     #              data=data, alpha = 1.0, color = colors[i], linestyle='--')
-#     #
-#     # ax = sns.lineplot(x = 'epoch',
-#     #              y = 'test',
-#     #              data=data, alpha = 1.0, color = colors[i])
-#
-#     # ax = sns.lineplot(x='epoch',
-#     #                   y='diff',
-#     #                   data=data, color=colors[i], linestyle='--')
-#
-#     ax.set(xlabel='Epoch', ylabel='Accuracy [%]')
-#
-# table_data = np.array(table_data)
-#
-#
-# plt.savefig("weights_" + str(dataset) + ".pdf")
-# plt.show()
+
 
