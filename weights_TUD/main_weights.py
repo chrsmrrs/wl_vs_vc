@@ -7,7 +7,6 @@ import pandas as pd
 import seaborn as sns
 import torch
 import torch.nn.functional as F
-import torch_geometric.transforms as T
 from torch_geometric.datasets import TUDataset
 from torch_geometric.loader import DataLoader
 from torch_geometric.nn import MLP, global_add_pool
@@ -101,6 +100,7 @@ for dataset_name in dataset_name_list:
             model = Net(dataset.num_features, hc, dataset.num_classes, num_layers).to(device)
             optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
+
             def train():
                 model.train()
 
@@ -115,6 +115,7 @@ for dataset_name in dataset_name_list:
                     total_loss += float(loss) * data.num_graphs
                 return total_loss / len(train_loader.dataset)
 
+
             @torch.no_grad()
             def test(loader):
                 model.eval()
@@ -125,7 +126,6 @@ for dataset_name in dataset_name_list:
                     pred = model(data.x, data.edge_index, data.batch).argmax(dim=-1)
                     total_correct += int((pred == data.y).sum())
                 return total_correct / len(loader.dataset)
-
 
             for epoch in range(1, epochs + 1):
                 loss = train()
@@ -145,19 +145,7 @@ for dataset_name in dataset_name_list:
                           y='diff',
                           data=data, alpha=1.0, color=colors[i])
 
-        # ax = sns.lineplot(x='epoch',
-        #                   y='train',
-        #                   data=data, alpha=0.3, color=colors[i])
-
-        # ax = sns.lineplot(x='epoch',
-        #                   y='test',
-        #                   data=data, alpha=1.0, color=colors[i])
-
-        # ax = sns.lineplot(x='epoch',
-        #                   y='diff',
-        #                   data=data, color=colors[i], linestyle='--')
-
-        ax.set(xlabel='Epoch', ylabel= 'Train - test accuracy [%]')
+        ax.set(xlabel='Epoch', ylabel='Train - test accuracy [%]')
 
     table_data = np.array(table_data)
 
