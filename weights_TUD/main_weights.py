@@ -64,14 +64,14 @@ class Net(torch.nn.Module):
 
         return self.mlp(x)
 
-    for dataset_name in dataset_name_list:
-        path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
-        dataset = TUDataset(path, name=dataset_name).shuffle()
+for dataset_name in dataset_name_list:
+    path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
+    dataset = TUDataset(path, name=dataset_name).shuffle()
 
-        colors = sns.color_palette()  # ["darkorange", "royalblue", "darkorchid", "limegreen"]
+    colors = sns.color_palette()  # ["darkorange", "royalblue", "darkorchid", "limegreen"]
 
-        raw_data = []
-        table_data = []
+    raw_data = []
+    table_data = []
 
     for i, hc in enumerate(hds):
         table_data.append([])

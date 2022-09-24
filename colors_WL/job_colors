@@ -9,5 +9,5 @@
 export PYTHONUNBUFFERED=1
 module load cuda/10.2
 module load anaconda
-conda activate wl
-python main.py
+conda activate gt
+python main_wl.py
