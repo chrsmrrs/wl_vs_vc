@@ -7,10 +7,10 @@ from wl import wl_simple, wl_simple_color_count
 
 datasets = [["ENZYMES", True], ["MCF-7", True], ["MOLT", True], ["Mutagenicity", True], ["NCI1", True], ["NCI109", True]]
 
-with open('results.csv', 'w') as file:
-    writer = csv.writer(file, delimiter=',', lineterminator='\n')
-    for dataset, labels in datasets:
-        writer.writerow([dataset])
+
+for dataset, labels in datasets:
+    with open(dataset + '.csv', 'w') as file:
+        writer = csv.writer(file, delimiter=',', lineterminator='\n')
 
         accs = []
         accs_train = []
