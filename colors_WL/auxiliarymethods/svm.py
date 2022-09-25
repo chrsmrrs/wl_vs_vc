@@ -52,14 +52,13 @@ def linear_svm_evaluation(all_feature_matrices, classes, num_repetitions=10,
                           C=[10 ** 3, 10 ** 2, 10 ** 1, 10 ** 0, 10 ** -1, 10 ** -2, 10 ** -3], all_std=False):
     # Acc. over all repetitions.
     test_accuracies_all = []
-    # All acc. over all folds and repetitions.
-    test_accuracies_complete = []
-
-    margins = []
+    train_accuracies_all = []
 
     for i in range(num_repetitions):
         # Test acc. over all folds.
         test_accuracies = []
+        train_accuracies = []
+
         kf = KFold(n_splits=10, shuffle=True)
 
         for train_index, test_index in kf.split(list(range(len(classes)))):
@@ -96,20 +95,16 @@ def linear_svm_evaluation(all_feature_matrices, classes, num_repetitions=10,
             clf = LinearSVC(C=best_c, tol=0.01, dual=False)
             clf.fit(train, c_train)
 
-            margins.append(1.0 / np.linalg.norm(clf.coef_))
-
             best_test = accuracy_score(c_test, clf.predict(test)) * 100.0
+            best_train = accuracy_score(c_train, clf.predict(train)) * 100.0
 
             test_accuracies.append(best_test)
-            if all_std:
-                test_accuracies_complete.append(best_test)
-        test_accuracies_all.append(float(np.array(test_accuracies).mean()))
+            train_accuracies.append(best_train)
 
-    if all_std:
-        return (np.array(test_accuracies_all).mean(), np.array(test_accuracies_all).std(),
-                np.array(test_accuracies_complete).std())
-    else:
-        return (np.array(test_accuracies_all).mean(), np.array(test_accuracies_all).std(), np.array(margins).mean())
+        test_accuracies_all.append(float(np.array(test_accuracies).mean()))
+        train_accuracies_all.append(float(np.array(train_accuracies).mean()))
+
+    return (np.array(train_accuracies_all).mean(), np.array(train_accuracies_all).std(),  np.array(test_accuracies_all).mean(), np.array(test_accuracies_all).std())
 
 
 # 10-CV for kernel svm and hyperparameter selection.

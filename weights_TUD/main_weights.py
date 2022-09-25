@@ -26,7 +26,6 @@ num_reps = 5
 hds = [4, 16, 256, 1024]
 
 
-
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 
@@ -169,7 +168,6 @@ for dataset_name in dataset_name_list:
     plt.savefig("weights_" + str(dataset_name) + ".pdf")
 
     plt.legend(loc='lower right')
-
     plt.show()
 
     plt.close()
