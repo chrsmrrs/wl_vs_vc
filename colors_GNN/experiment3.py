@@ -12,7 +12,7 @@ num_layers = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 lr = 0.001
 epochs = 500
 datasets = ["ENZYMES", "MCF-7", "MOLT", "Mutagenicity", "NCI1", "NCI109"]
-num_reps = 10
+num_reps = 5
 
 hd = 64
 
