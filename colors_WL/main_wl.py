@@ -5,8 +5,8 @@ from auxiliarymethods.auxiliary_methods import read_txt
 from auxiliarymethods.svm import kernel_svm_evaluation, linear_svm_evaluation, normalize_gram_matrix, normalize_feature_vector_dense
 from wl import wl_simple, wl_simple_color_count
 
-#datasets = [["ENZYMES", True],  ["Mutagenicity", True], ["NCI1", True], ["NCI109", True], ["MCF-7", True], ["MOLT", True],]
-datasets = [["MCF-7", True], ["MOLT", True],]
+datasets = [["ENZYMES", True],  ["Mutagenicity", True], ["NCI1", True], ["NCI109", True], ["MCF-7", True], ["MOLT", True],]
+#datasets = [["MCF-7", True], ["MOLT", True],]
 
 for dataset, labels in datasets:
     with open(dataset + '.csv', 'w') as file:

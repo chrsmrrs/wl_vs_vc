@@ -21,7 +21,7 @@ num_layers = 5
 lr = 0.001
 epochs = 500
 
-dataset_name_list = ["ENZYMES", "Mutagenicity", "NCI1", "NCI109",  "MCF-7", "MOLT"]
+dataset_name_list = ["MCF-7", "MOLT"]
 num_reps = 5
 hds = [4, 16, 256, 1024]
 
