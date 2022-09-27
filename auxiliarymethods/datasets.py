@@ -34,7 +34,7 @@ def read_multi_targets(ds_name):
 
 # Download dataset, regression problem=False, multi-target regression=False.
 def get_dataset(dataset, regression=False, multi_target_regression=False):
-    path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'datasets', dataset)
+    path = osp.join(osp.dirname(osp.realpath(__file__)), '.', 'datasets', dataset)
     TUDataset(path, name=dataset)
 
     if multi_target_regression:

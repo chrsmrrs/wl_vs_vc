@@ -22,7 +22,6 @@ lr = 0.001
 epochs = 500
 
 dataset_name_list = ["ENZYMES", "Mutagenicity", "NCI1", "NCI109",  "MCF-7", "MCF-7H"]
-dataset_name_list = ["MCF-7H"]
 
 num_reps = 5
 hds = [4, 16, 256, 1024]
@@ -137,7 +136,6 @@ for dataset_name in dataset_name_list:
         ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
 
         ax.set(title = dataset_name, xlabel='Epoch', ylabel='Train - test accuracy [%]')
-
 
     table_data = np.array(table_data)
 
