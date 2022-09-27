@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 batch_size = 128
 num_layers = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 lr = 0.001
-epochs = 50
+epochs = 3
 dataset_name_list = ["ENZYMES", "Mutagenicity", "NCI1", "NCI109", "MCF-7", "MCF-7H"]
 dataset_name_list = ["ENZYMES"]
 num_reps = 5
@@ -137,6 +137,8 @@ for d, dataset_name in enumerate(dataset_name_list):
     ax.set(title=dataset_name, xlabel='Layer', ylabel='Train - test accuracy [%]')
 
     #ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
+    plt.tight_layout()
+
     plt.show()
     exit()
 
