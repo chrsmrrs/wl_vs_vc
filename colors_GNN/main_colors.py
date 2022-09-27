@@ -123,10 +123,12 @@ for dataset_name in dataset_name_list:
     data = pd.DataFrame.from_records(raw_data)
 
     ax = sns.pointplot(x='layer',
-                       y='diff',
-                      data=data, alpha=1.0, color=colors[0], )
+                       y='diff', linestyles='',
+                      data=data, alpha=1.0, color=colors[1], )
 
-    sns.lineplot(x='layer', y='color', data=data, color="r", ax=ax.axes.twinx())
+    sns.lineplot(x='layer', y='color', data=data, color=colors[4], ax=ax.axes.twinx())
+
+    ax.set(title=dataset_name, xlabel='Layer', ylabel='Train - test accuracy [%]')
 
     #ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
     plt.show()

@@ -135,7 +135,7 @@ for dataset_name in dataset_name_list:
 
         ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
 
-        ax.set(title = dataset_name, xlabel='Epoch', ylabel='Train - test accuracy [%]')
+        ax.set(title=dataset_name, xlabel='Epoch', ylabel='Train - test accuracy [%]')
 
     table_data = np.array(table_data)
 
