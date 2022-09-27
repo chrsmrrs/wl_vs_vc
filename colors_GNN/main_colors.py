@@ -11,14 +11,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-
 batch_size = 128
 num_layers = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 lr = 0.001
-epochs = 10
+epochs = 50
 dataset_name_list = ["ENZYMES", "Mutagenicity", "NCI1", "NCI109", "MCF-7", "MCF-7H"]
-dataset_name_list = ["MUTAG"]
+dataset_name_list = ["ENZYMES"]
 num_reps = 5
+
+
+color_counts = [[3, 231, 10416, 15208, 16029, 16450, 16722, 16895, 17026]
+
+
+                ]
 
 hd = 64
 
@@ -50,7 +55,7 @@ class Net(torch.nn.Module):
 
 
 
-for dataset_name in dataset_name_list:
+for d, dataset_name in enumerate(dataset_name_list):
     path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
     dataset = TUDataset(path, name=dataset_name).shuffle()
 
@@ -63,6 +68,7 @@ for dataset_name in dataset_name_list:
     diffs_std = []
 
     for l in num_layers:
+        print(l)
         table_data.append([])
         for it in range(num_reps):
 
@@ -109,7 +115,7 @@ for dataset_name in dataset_name_list:
                 train_acc = test(train_loader) * 100.0
                 test_acc = test(test_loader) * 100.0
 
-            raw_data.append({'it': it, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'layer': l, 'color': l})
+            raw_data.append({'it': it, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'layer': l, 'Color classes': color_counts[d][l]})
             table_data[-1].append([train_acc, test_acc, train_acc - test_acc])
 
         # data = np.array(table_data)
@@ -124,9 +130,9 @@ for dataset_name in dataset_name_list:
 
     ax = sns.pointplot(x='layer',
                        y='diff', linestyles='',
-                      data=data, alpha=1.0, color=colors[1], )
+                      data=data, alpha=1.0, color=colors[0], )
 
-    sns.lineplot(x='layer', y='color', data=data, color=colors[4], ax=ax.axes.twinx())
+    sns.lineplot(x='layer', y='Color classes', data=data, color=colors[1], ax=ax.axes.twinx())
 
     ax.set(title=dataset_name, xlabel='Layer', ylabel='Train - test accuracy [%]')
 
