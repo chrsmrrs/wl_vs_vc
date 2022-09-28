@@ -15,7 +15,7 @@ import math as m
 batch_size = 128
 num_layers = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 lr = 0.001
-epochs = 50
+epochs = 500
 dataset_name_list = ["ENZYMES", "Mutagenicity", "NCI1", "NCI109", "MCF-7", "MCF-7H"]
 num_reps = 5
 
@@ -118,6 +118,10 @@ for d, dataset_name in enumerate(dataset_name_list):
                 test_acc = test(test_loader) * 100.0
 
             raw_data.append({'it': it, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'layer': l, 'Color classes': color_counts[d][l]})
+
+            print(color_counts[d])
+            print(color_counts[d][l])
+            exit()
             table_data[-1].append([train_acc, test_acc, train_acc - test_acc, color_counts[d][l]])
 
     data = pd.DataFrame.from_records(raw_data)
