@@ -120,7 +120,7 @@ for d, dataset_name in enumerate(dataset_name_list):
 
     ax = sns.pointplot(x='layer',
                        y='diff', linestyles='',
-                      data=data, alpha=1.0, color=colors[0], )
+                      data=data, color=colors[0], )
 
     sns.lineplot(x='layer', y='Color classes', data=data, color=colors[1], ax=ax.axes.twinx())
 
