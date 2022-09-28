@@ -7,7 +7,7 @@ from wl import wl_simple, wl_simple_color_count
 
 #datasets = [["ENZYMES", True],  ["Mutagenicity", True], ["NCI1", True], ["NCI109", True], ["MCF-7", True], ["MCF-7H", True],]
 #datasets = [["MCF-7", True], ["MOLT", True]]
-datasets = [["MCF-7H", True], ["MOLT", True]]
+datasets = [["MCF-7H", True]]
 
 for dataset, labels in datasets:
     with open(dataset + '.csv', 'w') as file:
