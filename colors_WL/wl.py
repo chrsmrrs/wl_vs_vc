@@ -87,18 +87,6 @@ def wl_simple_color_count(graph_db, h, degree=False, uniform=False):
     for _ in graph_db:
         feature_vectors.append(np.zeros(0, dtype=np.float64))
 
-    if degree:
-        for g in graph_db:
-            g.vp.nl = g.new_vertex_property("int")
-            for v in g.vertices():
-                g.vp.nl[v] = v.out_degree()
-
-    if uniform:
-        for g in graph_db:
-            g.vp.nl = g.new_vertex_property("int")
-            for v in g.vertices():
-                g.vp.nl[v] = 1
-
     offset = 0
     graph_indices = []
 
@@ -117,11 +105,8 @@ def wl_simple_color_count(graph_db, h, degree=False, uniform=False):
     i = 0
 
     color_counts = []
-    feature_vectors = np.array([
-        np.concatenate((feature_vectors[i], np.bincount(colors[index[0]:index[1]], minlength=max_all))) for
-        i, index in enumerate(graph_indices)])
 
-    color_counts.append(feature_vectors.shape[1])
+    color_counts.append(max_all)
     while i < h:
         colors = []
 
@@ -145,10 +130,6 @@ def wl_simple_color_count(graph_db, h, degree=False, uniform=False):
                 q += 1
 
         max_all = int(np.amax(colors) + 1)
-
-        # feature_vectors = np.array([
-        #     np.bincount(colors[index[0]:index[1]], minlength=max_all) for
-        #     i, index in enumerate(graph_indices)])
 
         i += 1
         color_counts.append(max_all)

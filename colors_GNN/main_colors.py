@@ -1,4 +1,5 @@
 import os.path as osp
+import csv
 
 import pandas as pd
 import torch
@@ -14,11 +15,9 @@ import matplotlib.pyplot as plt
 batch_size = 128
 num_layers = [0, 1, 2, 3, 4, 5, 6, 7, 8]
 lr = 0.001
-epochs = 3
-dataset_name_list = ["ENZYMES", "Mutagenicity", "NCI1", "NCI109", "MCF-7", "MCF-7H"]
-dataset_name_list = ["ENZYMES"]
+epochs = 500
+dataset_name_list = ["MUTAG", "ENZYMES", "Mutagenicity", "NCI1", "NCI109", "MCF-7", "MCF-7H"]
 num_reps = 5
-
 
 color_counts = [
     [3, 231, 10416, 15208, 16029, 16450, 16722, 16895, 17026],
@@ -53,9 +52,6 @@ class Net(torch.nn.Module):
         x = global_add_pool(x, batch)
 
         return self.mlp(x)
-
-
-
 
 
 for d, dataset_name in enumerate(dataset_name_list):
@@ -100,7 +96,6 @@ for d, dataset_name in enumerate(dataset_name_list):
                     total_loss += float(loss) * data.num_graphs
                 return total_loss / len(train_loader.dataset)
 
-
             @torch.no_grad()
             def test(loader):
                 model.eval()
@@ -119,15 +114,7 @@ for d, dataset_name in enumerate(dataset_name_list):
                 test_acc = test(test_loader) * 100.0
 
             raw_data.append({'it': it, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'layer': l, 'Color classes': color_counts[d][l]})
-            table_data[-1].append([train_acc, test_acc, train_acc - test_acc])
-
-        # data = np.array(table_data)
-        # train = data[-1][:, 0]
-        # test = data[-1][:, 1]
-        # diff = data[-1][:, 2]
-        #
-        # diffs.append(diff.mean())
-        # diffs_std.append(diff.std())
+            table_data[-1].append([train_acc, test_acc, train_acc - test_acc, color_counts[d][l]])
 
     data = pd.DataFrame.from_records(raw_data)
 
@@ -138,12 +125,44 @@ for d, dataset_name in enumerate(dataset_name_list):
     sns.lineplot(x='layer', y='Color classes', data=data, color=colors[1], ax=ax.axes.twinx())
 
     ax.set(title=dataset_name, xlabel='Layer', ylabel='Train - test accuracy [%]')
+    plt.legend(loc='lower right', labels=['Color classes'])
 
     #ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
     plt.tight_layout()
-
+    plt.savefig("colors_" + str(dataset_name) + ".pdf")
     plt.show()
-    exit()
+    plt.close()
+
+
+
+    print("#####")
+    print(dataset_name)
+    print("#####")
+
+    table_data = np.array(table_data)
+
+    with open(dataset_name + '.csv', 'w') as file:
+        writer = csv.writer(file, delimiter=' ', lineterminator='\n')
+
+        for i, h in enumerate(num_layers):
+            train = table_data[i][:, 0]
+            test = table_data[i][:, 1]
+            diff = table_data[i][:, 2]
+            color = table_data[i][:, 3]
+
+            writer.writerow([str(h)])
+            writer.writerow(["###"])
+            writer.writerow([train.mean(), train.std()])
+            writer.writerow([test.mean(), test.std()])
+            writer.writerow([diff.mean(), diff.std()])
+            writer.writerow([color[-1]])
+
+            print(str(h))
+            print("###")
+            print(train.mean(), train.std())
+            print(test.mean(), test.std())
+            print(diff.mean(), diff.std())
+            print(color[-1])
 
     # data = pd.DataFrame.from_records(raw_data)
     # data.to_csv(dataset_name + '_relu')

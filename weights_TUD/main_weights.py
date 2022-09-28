@@ -165,8 +165,6 @@ for dataset_name in dataset_name_list:
             print(test.mean(), test.std())
             print(diff.mean(), diff.std())
 
-    plt.savefig("weights_" + str(dataset_name) + ".pdf")
-
     plt.legend(loc='lower right')
     plt.show()
 
