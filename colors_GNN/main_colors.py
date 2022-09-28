@@ -71,7 +71,7 @@ for d, dataset_name in enumerate(dataset_name_list):
     diffs_std = []
 
     for l in num_layers:
-        print(l)
+        #print(l)
         table_data.append([])
         for it in range(num_reps):
 
@@ -119,9 +119,7 @@ for d, dataset_name in enumerate(dataset_name_list):
 
             raw_data.append({'it': it, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'layer': l, 'Color classes': color_counts[d][l]})
 
-            print(color_counts[d])
-            print(color_counts[d][l])
-            exit()
+
             table_data[-1].append([train_acc, test_acc, train_acc - test_acc, color_counts[d][l]])
 
     data = pd.DataFrame.from_records(raw_data)
