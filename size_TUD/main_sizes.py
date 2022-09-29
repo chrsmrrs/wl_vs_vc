@@ -21,7 +21,7 @@ num_layers = 5
 lr = 0.001
 epochs = 500
 
-dataset_name_list = ["ENZYMES", "Mutagenicity", "NCI1", "NCI109",  "MCF-7", "MCF-7H"]
+dataset_name_list = ["Mutagenicity", "NCI1", "NCI109",  "MCF-7", "MCF-7H"]
 
 num_reps = 5
 ratios = [(.50,.90)]
@@ -134,6 +134,8 @@ for dataset_name in dataset_name_list:
                      'hidden_channels': hd})
 
             table_data[-1].append([train_acc, test_acc, train_acc - test_acc])
+
+            print(train_acc, test_acc)
 
         # data = pd.DataFrame.from_records(raw_data)
         # data = data.astype({'epoch': int})
