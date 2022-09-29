@@ -1,39 +1,52 @@
-import os.path as osp
 import csv
+import os.path as osp
 
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+import seaborn as sns
 import torch
 import torch.nn.functional as F
 from torch_geometric.datasets import TUDataset
 from torch_geometric.loader import DataLoader
-from torch_geometric.nn import MLP, global_add_pool, GraphConv
-import seaborn as sns
-import numpy as np
-import matplotlib.pyplot as plt
-import math as m
+from torch_geometric.nn import MLP, global_add_pool
+from torch_geometric.utils import degree
+
+from conv import GraphConv
+from matplotlib.ticker import FormatStrFormatter
+
 
 batch_size = 128
-num_layers = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+num_layers = 5
 lr = 0.001
-epochs = 5
-dataset_name_list = ["ENZYMES", "Mutagenicity", "NCI1", "NCI109", "MCF-7", "MCF-7H"]
+epochs = 500
+
+dataset_name_list = ["ENZYMES", "Mutagenicity", "NCI1", "NCI109",  "MCF-7", "MCF-7H"]
+
 num_reps = 5
-
-color_counts = [
-    [3, 231, 10416, 15208, 16029, 16450, 16722, 16895, 17026],
-    [14, 274, 4327, 18309, 38013, 55650, 68257, 76872, 82412],
-    [37, 292, 4058, 22948, 44508, 58948, 68632, 75754, 81263],
-    [38, 283, 4098, 23411, 45045, 59454, 69155, 76292, 81744],
-    [46, 487, 9543, 78604, 188976, 284930, 361501, 422537, 469318],
-]
-
-
-
-
-
+ratios = [(.50,.90)]
 hd = 64
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+
+def split_dataset(dataset, low, up):
+    sizes = []
+    for data in dataset:
+        sizes.append(data.num_nodes)
+
+    l = np.quantile(sizes, low)
+    u = np.quantile(sizes, up)
+
+    lower_indices = []
+    upper_indices = []
+    for i, data in enumerate(dataset):
+        if data.num_nodes <= l:
+            lower_indices.append(i)
+        if data.num_nodes >= u:
+            upper_indices.append(i)
+
+    return (lower_indices, upper_indices)
 
 # Simple GNN layer from paper.
 class Net(torch.nn.Module):
@@ -52,13 +65,12 @@ class Net(torch.nn.Module):
 
     def forward(self, x, edge_index, batch):
         for conv in self.convs:
-            x = torch.relu(conv(x, edge_index))
+            x = conv(x, edge_index).relu()
         x = global_add_pool(x, batch)
 
         return self.mlp(x)
 
-
-for d, dataset_name in enumerate(dataset_name_list):
+for dataset_name in dataset_name_list:
     path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
     dataset = TUDataset(path, name=dataset_name).shuffle()
 
@@ -67,23 +79,23 @@ for d, dataset_name in enumerate(dataset_name_list):
     raw_data = []
     table_data = []
 
-    diffs = []
-    diffs_std = []
-
-    for l in num_layers:
-        print(l)
+    for i, (low, up) in enumerate(ratios):
         table_data.append([])
         for it in range(num_reps):
+            print(i)
 
             dataset.shuffle()
+            lower_indices, upper_indices = split_dataset(dataset, low, up)
 
-            train_dataset = dataset[len(dataset) // 10:]
+            train_dataset = dataset[lower_indices]
             train_loader = DataLoader(train_dataset, batch_size, shuffle=True)
 
-            test_dataset = dataset[:len(dataset) // 10]
+            test_dataset = dataset[upper_indices]
             test_loader = DataLoader(test_dataset, batch_size)
 
-            model = Net(dataset.num_features, hd, dataset.num_classes, l).to(device)
+            print(len(train_dataset), len(test_dataset))
+
+            model = Net(dataset.num_features, hd, dataset.num_classes, num_layers).to(device)
             optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
             def train():
@@ -100,6 +112,7 @@ for d, dataset_name in enumerate(dataset_name_list):
                     total_loss += float(loss) * data.num_graphs
                 return total_loss / len(train_loader.dataset)
 
+
             @torch.no_grad()
             def test(loader):
                 model.eval()
@@ -111,66 +124,57 @@ for d, dataset_name in enumerate(dataset_name_list):
                     total_correct += int((pred == data.y).sum())
                 return total_correct / len(loader.dataset)
 
-
             for epoch in range(1, epochs + 1):
                 loss = train()
                 train_acc = test(train_loader) * 100.0
                 test_acc = test(test_loader) * 100.0
 
-            raw_data.append({'it': it, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'layer': l, 'Color classes': color_counts[d][l]})
+                raw_data.append(
+                    {'epoch': epoch, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'it': it,
+                     'hidden_channels': hd})
 
+            table_data[-1].append([train_acc, test_acc, train_acc - test_acc])
 
-            table_data[-1].append([train_acc, test_acc, train_acc - test_acc, color_counts[d][l]])
+        # data = pd.DataFrame.from_records(raw_data)
+        # data = data.astype({'epoch': int})
+        #
+        # ax = sns.lineplot(x='epoch',
+        #                   y='diff',
+        #                   data=data, alpha=1.0, color=colors[i], label=str(hc))
+        #
+        # ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
+        #
+        # ax.set(title=dataset_name, xlabel='Epoch', ylabel='Train - test accuracy [%]')
 
-    data = pd.DataFrame.from_records(raw_data)
+    table_data = np.array(table_data)
 
-    ax = sns.pointplot(x='layer',
-                       y='diff', linestyles='',
-                      data=data, color=colors[0], )
-
-    sns.lineplot(x='layer', y='Color classes', data=data, color=colors[1], ax=ax.axes.twinx())
-
-    ax.set(title=dataset_name, xlabel='Layer', ylabel='Train - test accuracy [%]')
-    plt.legend(loc='lower right', labels=['Color classes'])
-
-    #ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
-    plt.tight_layout()
-    plt.savefig("colors_" + str(dataset_name) + ".pdf")
-    plt.show()
-
-
-    plt.close()
-
-
+    temp = []
 
     print("#####")
     print(dataset_name)
     print("#####")
 
-    table_data = np.array(table_data)
-
     with open(dataset_name + '.csv', 'w') as file:
         writer = csv.writer(file, delimiter=' ', lineterminator='\n')
 
-        for i, h in enumerate(num_layers):
+        for i, h in enumerate(ratios):
             train = table_data[i][:, 0]
             test = table_data[i][:, 1]
             diff = table_data[i][:, 2]
-            color = table_data[i][:, 3]
 
             writer.writerow([str(h)])
             writer.writerow(["###"])
             writer.writerow([train.mean(), train.std()])
             writer.writerow([test.mean(), test.std()])
             writer.writerow([diff.mean(), diff.std()])
-            writer.writerow([color[-1]])
 
             print(str(h))
             print("###")
             print(train.mean(), train.std())
             print(test.mean(), test.std())
             print(diff.mean(), diff.std())
-            print(color[-1])
 
-    # data = pd.DataFrame.from_records(raw_data)
-    # data.to_csv(dataset_name + '_relu')
+    plt.legend(loc='lower right')
+    plt.show()
+
+    plt.close()
