@@ -24,7 +24,7 @@ epochs = 500
 dataset_name_list = ["Mutagenicity", "NCI1", "NCI109",  "MCF-7", "MCF-7H"]
 
 num_reps = 5
-ratios = [(.50,.90)]
+ratios = [(0.6, 0.7), (.5,.8), (0.4, 0.9)]
 hd = 64
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -176,7 +176,7 @@ for dataset_name in dataset_name_list:
             print(test.mean(), test.std())
             print(diff.mean(), diff.std())
 
-    plt.legend(loc='lower right')
-    plt.show()
-
-    plt.close()
+    # plt.legend(loc='lower right')
+    # plt.show()
+    #
+    # plt.close()
