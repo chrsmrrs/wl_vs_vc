@@ -11,7 +11,7 @@ datasets = [["ENZYMES", True],  ["Mutagenicity", True], ["NCI1", True], ["NCI109
 color_count = []
 for dataset, labels in datasets:
     with open(dataset + '.csv', 'w') as file:
-        writer = csv.writer(file, delimiter=',', lineterminator='\n')
+        writer = csv.writer(file, delimiter=' ', lineterminator='\n')
 
         accs = []
         accs_train = []
