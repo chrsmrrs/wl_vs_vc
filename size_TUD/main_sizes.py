@@ -157,7 +157,7 @@ for dataset_name in dataset_name_list:
     print(dataset_name)
     print("#####")
 
-    with open(dataset_name + '.csv', 'w') as file:
+    with open(dataset_name + '_.csv', 'w') as file:
         writer = csv.writer(file, delimiter=' ', lineterminator='\n')
 
         for i, h in enumerate(ratios):
