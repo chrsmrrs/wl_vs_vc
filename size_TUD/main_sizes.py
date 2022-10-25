@@ -25,7 +25,7 @@ dataset_name_list = ["Mutagenicity", "NCI1", "NCI109",  "MCF-7", "MCF-7H"]
 
 num_reps = 5
 #ratios = [(0.6, 0.7), (.5,.8), (0.4, 0.9)]
-ratios = [(.5,.7), (0.4, 0.8)]
+ratios = [(.5,.7)]
 hd = 64
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
