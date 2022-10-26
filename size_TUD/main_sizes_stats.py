@@ -21,7 +21,7 @@ num_layers = 5
 lr = 0.001
 epochs = 500
 
-dataset_name_list = ["Mutagenicity", "NCI1", "NCI109",  "MCF-7", "MCF-7H"]
+dataset_name_list = ["MCF-7", "MCF-7H", "NCI1", "NCI109", "Mutagenicity"]
 
 num_reps = 5
 ratios = [(0.6, 0.7), (.5,.7), (.5,.8), (0.4, 0.9)]
@@ -64,6 +64,9 @@ for dataset_name in dataset_name_list:
 
         print(dataset.data.y[lower_indices].sum() / dataset.data.y[lower_indices].size(-1))
         print(dataset.data.y[upper_indices].sum() / dataset.data.y[upper_indices].size(-1))
+
+
+
 
         print(len(train_dataset), len(test_dataset))
 

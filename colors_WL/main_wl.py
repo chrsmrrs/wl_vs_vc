@@ -5,8 +5,8 @@ from auxiliarymethods.auxiliary_methods import read_txt
 from auxiliarymethods.svm import kernel_svm_evaluation, linear_svm_evaluation, normalize_gram_matrix, normalize_feature_vector_dense
 from wl import wl_simple, wl_simple_color_count
 
-datasets = [["ENZYMES", True],  ["Mutagenicity", True], ["NCI1", True], ["NCI109", True]]
-#datasets = [["MCF-7", True], ["MOLT", True]]
+datasets = [["ENZYMES", True], ["MCF-7", True], ["MCF-7H", True], ["Mutagenicity", True], ["NCI1", True], ["NCI109", True]]
+datasets = [["MCF-7", True], ["MCF-7H", True],]
 
 color_count = []
 for dataset, labels in datasets:
@@ -18,18 +18,29 @@ for dataset, labels in datasets:
 
         graph_db, _ = read_txt(dataset)
 
-        color_count = wl_simple_color_count(graph_db, h=9)
+        #color_count = wl_simple_color_count(graph_db, h=9)
 
-        for i in range(0, 9):
-            graph_db, classes = read_txt(dataset)
-            gram_matrices = []
-            gram_matrix = wl_simple(graph_db, h=i, degree=False, uniform=not labels, gram_matrix=True)
+        print(dataset)
+        for i in range(0, 7):
             print(i)
-            gram_matrix = normalize_gram_matrix(gram_matrix)
 
-            gram_matrices.append(gram_matrix)
+            graph_db, _ = read_txt(dataset)
+            feature_matrix = wl_simple(graph_db, h=i, degree=False, uniform=not labels, gram_matrix=False)
 
-            train, train_std, test, test_std = kernel_svm_evaluation(gram_matrices, classes, num_repetitions=10)
+            u = np.unique(feature_matrix, axis=0).shape[0]
+            print(u, len(graph_db))
 
-            print(dataset, str(i), train, train_std, test, test_std, train-test, color_count[i])
-            writer.writerow([dataset, str(i), train, train_std, test, test_std, train - test, color_count[i]])
+            # graph_db, classes = read_txt(dataset)
+            # gram_matrices = []
+            # gram_matrix = wl_simple(graph_db, h=i, degree=False, uniform=not labels, gram_matrix=True)
+            #
+            # gram_matrix = normalize_gram_matrix(gram_matrix)
+            #
+            # gram_matrices.append(gram_matrix)
+            #
+            # train, train_std, test, test_std = kernel_svm_evaluation(gram_matrices, classes, num_repetitions=10)
+            #
+            # print(dataset, str(i), train, test, train - test, )
+
+            #print(dataset, str(i), train, train_std, test, test_std, train - test, color_count[i])
+            #writer.writerow([dataset, str(i), train, train_std, test, test_std, train - test, color_count[i]])
