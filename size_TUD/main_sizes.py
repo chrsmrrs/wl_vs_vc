@@ -1,10 +1,10 @@
 import csv
 import os.path as osp
 
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import seaborn as sns
+#import seaborn as sns
 import torch
 import torch.nn.functional as F
 from torch_geometric.datasets import TUDataset
@@ -13,7 +13,7 @@ from torch_geometric.nn import MLP, global_add_pool
 from torch_geometric.utils import degree
 
 from conv import GraphConv
-from matplotlib.ticker import FormatStrFormatter
+#from matplotlib.ticker import FormatStrFormatter
 
 
 batch_size = 128
