@@ -94,7 +94,7 @@ for dataset_name in dataset_name_list:
             test_dataset = dataset[upper_indices]
             test_loader = DataLoader(test_dataset, batch_size)
 
-            print(len(train_dataset), len(test_dataset))
+            print("##")
 
             model = Net(dataset.num_features, hd, dataset.num_classes, num_layers).to(device)
             optimizer = torch.optim.Adam(model.parameters(), lr=lr)
@@ -136,7 +136,8 @@ for dataset_name in dataset_name_list:
 
             table_data[-1].append([train_acc, test_acc, train_acc - test_acc])
 
-            print(train_acc, test_acc)
+            print(train_acc)
+            print(test_acc)
 
         # data = pd.DataFrame.from_records(raw_data)
         # data = data.astype({'epoch': int})
