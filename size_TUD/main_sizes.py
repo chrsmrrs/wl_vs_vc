@@ -3,7 +3,7 @@ import os.path as osp
 
 #import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
+#import pandas as pd
 #import seaborn as sns
 import torch
 import torch.nn.functional as F
@@ -75,7 +75,7 @@ for dataset_name in dataset_name_list:
     path = osp.join(osp.dirname(osp.realpath(__file__)), '..', 'data', 'TU')
     dataset = TUDataset(path, name=dataset_name).shuffle()
 
-    colors = sns.color_palette()  # ["darkorange", "royalblue", "darkorchid", "limegreen"]
+    #colors = sns.color_palette()  # ["darkorange", "royalblue", "darkorchid", "limegreen"]
 
     raw_data = []
     table_data = []
