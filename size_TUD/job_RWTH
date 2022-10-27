@@ -4,6 +4,7 @@
 #SBATCH -o gpu_serial.%J.log
 
 #SBATCH --gres=gpu:1
+#SBATCH --time=6:00:00
 
 module load load cuda/10.2
 conda activate gt
