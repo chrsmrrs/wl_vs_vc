@@ -7,5 +7,4 @@
 #SBATCH --time=6:00:00
 
 module load load cuda/10.2
-conda activate wl
-python main_sizes.py
+/home/xi622576/miniconda3/envs/wl/bin/python3.10 main_sizes.py
