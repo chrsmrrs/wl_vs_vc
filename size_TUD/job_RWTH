@@ -1,0 +1,10 @@
+#!/usr/local_rwth/bin/bash
+
+#SBATCH -J gpu_serial
+#SBATCH -o gpu_serial.%J.log
+
+#SBATCH --gres=gpu:1
+
+module load load cuda/10.2
+conda activate gt
+python main_sizes.py
