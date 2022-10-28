@@ -20,7 +20,7 @@ for dataset, labels in datasets:
         #color_count = wl_simple_color_count(graph_db, h=9)
 
         print(dataset)
-        for i in range(5, 7):
+        for i in range(4, 5):
             print(i)
 
             graph_db, _ = read_txt(dataset)
