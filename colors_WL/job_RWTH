@@ -1,0 +1,9 @@
+#!/usr/local_rwth/bin/bash
+
+#SBATCH -J gpu_serial
+
+#SBATCH --gres=gpu:volta:1
+#SBATCH --time=12:00:00
+
+module load cuda/10.2
+/home/xi622576/miniconda3/envs/gc/bin/python3.10 -u  main_wl.py
