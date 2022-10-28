@@ -70,6 +70,8 @@ def wl_simple(graph_db, h, degree=False, uniform=False, gram_matrix=True):
             np.concatenate((feature_vectors[i], np.bincount(colors[index[0]:index[1]], minlength=max_all))) for
             i, index in enumerate(graph_indices)]
 
+        feature_vectors = [np.bincount(colors[index[0]:index[1]], minlength=max_all) for i, index in enumerate(graph_indices)]
+
         i += 1
 
     feature_vectors = np.array(feature_vectors)
