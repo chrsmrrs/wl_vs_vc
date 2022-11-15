@@ -17,7 +17,7 @@ num_layers = [0, 1, 2, 3, 4, 5, 6]
 lr = 0.001
 epochs = 500
 #dataset_name_list = ["MCF-7", "MCF-7H"]
-dataset_name_list = ["IMDB-BINARY", "SF-295"]
+dataset_name_list = ["SF-295"]
 num_reps = 5
 
 # color_counts = [
