@@ -2,10 +2,10 @@ import numpy as np
 import os.path as osp
 import csv
 from auxiliarymethods.auxiliary_methods import read_txt
-from auxiliarymethods.svm import kernel_svm_evaluation, linear_svm_evaluation, normalize_gram_matrix, normalize_feature_vector_dense
+#from auxiliarymethods.svm import kernel_svm_evaluation, linear_svm_evaluation, normalize_gram_matrix, normalize_feature_vector_dense
 from wl import wl_simple, wl_simple_color_count
 
-datasets = [ ["IMDB-BINARY", True]]
+datasets = [ ["PROTEINS", True]]
 
 color_count = []
 for dataset, labels in datasets:
@@ -16,6 +16,7 @@ for dataset, labels in datasets:
         accs_train = []
 
         graph_db, _ = read_txt(dataset)
+        print("ss")
 
         #color_count = wl_simple_color_count(graph_db, h=9)
 

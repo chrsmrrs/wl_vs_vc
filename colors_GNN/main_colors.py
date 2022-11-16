@@ -17,7 +17,7 @@ num_layers = [0, 1, 2, 3, 4, 5, 6]
 lr = 0.001
 epochs = 500
 #dataset_name_list = ["MCF-7", "MCF-7H"]
-dataset_name_list = ["SF-295"]
+dataset_name_list = ["PROTEINS"]
 num_reps = 5
 
 # color_counts = [
@@ -26,10 +26,13 @@ num_reps = 5
 #     [37, 292, 4058, 22948, 44508, 58948, 68632, 75754, 81263],
 #     [38, 283, 4098, 23411, 45045, 59454, 69155, 76292, 81744],
 #     [46, 487, 9543, 78604, 188976, 284930, 361501, 422537, 469318],
+
 # ]
 
 
-
+color_counts = [
+    [745, 1069, 1069, 1069, 1069, 1069, 1069, 1069, 1069],
+]
 
 
 hd = 64
@@ -157,7 +160,7 @@ for d, dataset_name in enumerate(dataset_name_list):
             train = table_data[i][:, 0]
             test = table_data[i][:, 1]
             diff = table_data[i][:, 2]
-            #color = table_data[i][:, 3]
+            color = table_data[i][:, 3]
 
             writer.writerow([str(h)])
             writer.writerow(["###"])
@@ -171,7 +174,7 @@ for d, dataset_name in enumerate(dataset_name_list):
             print(train.mean(), train.std())
             print(test.mean(), test.std())
             print(diff.mean(), diff.std())
-            #print(color[-1])
+            print(color[-1])
 
     # data = pd.DataFrame.from_records(raw_data)
     # data.to_csv(dataset_name + '_relu')
