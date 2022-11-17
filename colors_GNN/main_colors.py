@@ -17,7 +17,7 @@ num_layers = [0, 1, 2, 3, 4, 5, 6]
 lr = 0.001
 epochs = 500
 #dataset_name_list = ["MCF-7", "MCF-7H"]
-dataset_name_list = ["PROTEINS"]
+dataset_name_list = ["MUTAG"]
 num_reps = 5
 
 # color_counts = [
@@ -31,7 +31,7 @@ num_reps = 5
 
 
 color_counts = [
-    [745, 1069, 1069, 1069, 1069, 1069, 1069, 1069, 1069],
+    [77, 90, 167, 171, 175, 175, 175, 175, 175],
 ]
 
 
