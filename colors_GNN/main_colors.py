@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 import math as m
 
 batch_size = 128
-num_layers = [0, 1, 2, 3, 4, 5, 6]
+num_layers = [0, 1, 2, 3, 4]
 lr = 0.001
 epochs = 500
 #dataset_name_list = ["MCF-7", "MCF-7H"]
