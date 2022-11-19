@@ -5,7 +5,7 @@ from auxiliarymethods.auxiliary_methods import read_txt
 #from auxiliarymethods.svm import kernel_svm_evaluation, linear_svm_evaluation, normalize_gram_matrix, normalize_feature_vector_dense
 from wl import wl_simple, wl_simple_color_count
 
-datasets = [ ["DBLP_v1", True]]
+datasets = [ ["PC-3", True]]
 
 color_count = []
 for dataset, labels in datasets:
