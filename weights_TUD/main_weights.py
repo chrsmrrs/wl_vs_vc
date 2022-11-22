@@ -21,7 +21,7 @@ num_layers = 5
 lr = 0.001
 epochs = 500
 
-dataset_name_list = ["MUTAG", "DD"]
+dataset_name_list = ["MUTAG"]
 
 num_reps = 5
 hds = [4, 16, 256, 1024]
