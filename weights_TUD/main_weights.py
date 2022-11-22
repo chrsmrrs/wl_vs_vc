@@ -21,7 +21,7 @@ num_layers = 5
 lr = 0.001
 epochs = 500
 
-dataset_name_list = ["DD"]
+dataset_name_list = ["MUTAG"]
 
 num_reps = 5
 hds = [4, 16, 256, 1024]
@@ -165,6 +165,7 @@ for dataset_name in dataset_name_list:
             print(test.mean(), test.std())
             print(diff.mean(), diff.std())
 
+    plt.savefig("weights_" + str(dataset_name) + ".pdf")
     plt.legend(loc='lower right')
     plt.show()
 
