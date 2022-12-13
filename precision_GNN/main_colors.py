@@ -39,7 +39,7 @@ class Net(torch.nn.Module):
         else:
             self.mlp = MLP([in_channels, hidden_channels, out_channels])
 
-    def forward(slf, x, edge_index, batch):
+    def forward(self, x, edge_index, batch):
         for conv in self.convs:
             x = torch.relu(conv(x, edge_index))
         x = global_add_pool(x, batch)
