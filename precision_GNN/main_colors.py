@@ -13,29 +13,12 @@ import matplotlib.pyplot as plt
 import math as m
 
 batch_size = 128
-num_layers = [0, 1, 2, 3, 4]
+num_layers = 4
 lr = 0.001
 epochs = 500
 #dataset_name_list = ["MCF-7", "MCF-7H"]
-dataset_name_list = ["DD"]
+dataset_name_list = ["ENZYMES"]
 num_reps = 5
-
-# color_counts = [
-#     [3, 231, 10416, 15208, 16029, 16450, 16722, 16895, 17026],
-#     [14, 274, 4327, 18309, 38013, 55650, 68257, 76872, 82412],
-#     [37, 292, 4058, 22948, 44508, 58948, 68632, 75754, 81263],
-#     [38, 283, 4098, 23411, 45045, 59454, 69155, 76292, 81744],
-#     [46, 487, 9543, 78604, 188976, 284930, 361501, 422537, 469318],
-
-# ]
-
-
-
-color_counts = [
-[1174, 1178, 1178, 1178, 1178, 1178, 1178, 1178, 1178],
-[]
-    ]
-
 
 hd = 64
 
@@ -56,7 +39,7 @@ class Net(torch.nn.Module):
         else:
             self.mlp = MLP([in_channels, hidden_channels, out_channels])
 
-    def forward(self, x, edge_index, batch):
+    def forward(slf, x, edge_index, batch):
         for conv in self.convs:
             x = torch.relu(conv(x, edge_index))
         x = global_add_pool(x, batch)
@@ -76,8 +59,8 @@ for d, dataset_name in enumerate(dataset_name_list):
     diffs = []
     diffs_std = []
 
-    for l in num_layers:
-        print(l)
+
+    for p in [torch.float16, torch.float32, torch.float64]:
         table_data.append([])
         for it in range(num_reps):
 
@@ -89,11 +72,10 @@ for d, dataset_name in enumerate(dataset_name_list):
             test_dataset = dataset[:len(dataset) // 10]
             test_loader = DataLoader(test_dataset, batch_size)
 
+            model = Net(dataset.num_features, hd, dataset.num_classes, num_layers).to(device)
 
-
-
-            model = Net(dataset.num_features, hd, dataset.num_classes, l).to(device)
-
+            for w in model.parameters():
+                w.to(p)
 
             optimizer = torch.optim.Adam(model.parameters(), lr=lr)
 
@@ -122,36 +104,17 @@ for d, dataset_name in enumerate(dataset_name_list):
                     total_correct += int((pred == data.y).sum())
                 return total_correct / len(loader.dataset)
 
-
             for epoch in range(1, epochs + 1):
                 loss = train()
                 train_acc = test(train_loader) * 100.0
                 test_acc = test(test_loader) * 100.0
 
-            raw_data.append({'it': it, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'layer': l, 'Color classes': color_counts[d][l]})
+            raw_data.append({'it': it, 'test': test_acc, 'train': train_acc, 'diff': train_acc - test_acc, 'precision': p})
 
 
-            table_data[-1].append([train_acc, test_acc, train_acc - test_acc, color_counts[d][l]])
+            table_data[-1].append([train_acc, test_acc, train_acc - test_acc])
 
     data = pd.DataFrame.from_records(raw_data)
-
-    # ax = sns.pointplot(x='layer',
-    #                    y='diff', linestyles='',
-    #                   data=data, color=colors[0], )
-    #
-    # sns.lineplot(x='layer', y='Color classes', data=data, color=colors[1], ax=ax.axes.twinx())
-    #
-    # ax.set(title=dataset_name, xlabel='Layer', ylabel='Train - test accuracy [%]')
-    # plt.legend(loc='lower right', labels=['Color classes'])
-    #
-    # #ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
-    # plt.tight_layout()
-    # plt.savefig("colors_" + str(dataset_name) + ".pdf")
-    # plt.show()
-    #
-    #
-    # plt.close()
-
 
 
     print("#####")
@@ -163,11 +126,10 @@ for d, dataset_name in enumerate(dataset_name_list):
     with open(dataset_name + '.csv', 'w') as file:
         writer = csv.writer(file, delimiter=' ', lineterminator='\n')
 
-        for i, h in enumerate(num_layers):
+        for i, h in enumerate():
             train = table_data[i][:, 0]
             test = table_data[i][:, 1]
             diff = table_data[i][:, 2]
-            color = table_data[i][:, 3]
 
             writer.writerow([str(h)])
             writer.writerow(["###"])
@@ -181,7 +143,3 @@ for d, dataset_name in enumerate(dataset_name_list):
             print(train.mean(), train.std())
             print(test.mean(), test.std())
             print(diff.mean(), diff.std())
-            print(color[-1])
-
-    # data = pd.DataFrame.from_records(raw_data)
-    # data.to_csv(dataset_name + '_relu')
