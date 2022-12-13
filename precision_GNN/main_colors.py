@@ -126,7 +126,7 @@ for d, dataset_name in enumerate(dataset_name_list):
     with open(dataset_name + '.csv', 'w') as file:
         writer = csv.writer(file, delimiter=' ', lineterminator='\n')
 
-        for i, h in enumerate():
+        for i, h in enumerate([16, 32, 64]):
             train = table_data[i][:, 0]
             test = table_data[i][:, 1]
             diff = table_data[i][:, 2]
