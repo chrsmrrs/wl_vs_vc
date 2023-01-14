@@ -1,14 +1,14 @@
 import torch
-from torch.nn import Module, Linear, Sequential, BCEWithLogitsLoss, ModuleList, LeakyReLU, ReLU, GELU, Dropout
-from torch_geometric.nn import GraphConv
+from torch.nn import Module, Linear, Sequential, BCEWithLogitsLoss, ModuleList, BatchNorm1d, ReLU, LeakyReLU, Dropout
+from torch_geometric.nn import GraphConv, MessagePassing
 from torch_geometric.nn.pool import global_add_pool, global_mean_pool
 from tqdm import trange
 
 
-class GNNLayer(Module):
+class GraphConvLayer(Module):
 
     def __init__(self, in_dim, out_dim, dropout_p=0.0):
-        super(GNNLayer, self).__init__()
+        super(GraphConvLayer, self).__init__()
         self.conv = GraphConv(in_channels=in_dim, out_channels=out_dim)
         self.act = ReLU(inplace=True)
         self.dropout = Dropout(dropout_p)
@@ -18,6 +18,36 @@ class GNNLayer(Module):
         out = self.act(out)
         out = self.dropout(out)
         return out
+
+
+class GNNLayer(MessagePassing):
+
+    def __init__(self, in_dim, out_dim, dropout_p=0.0):
+        super(GNNLayer, self).__init__(aggr='add')
+
+        self.msg = Sequential(
+            Linear(in_dim, out_dim),
+            BatchNorm1d(out_dim, track_running_stats=False),
+            ReLU(inplace=True),
+            Linear(out_dim, out_dim),
+            Dropout(dropout_p)
+        )
+
+        self.root_linear = Linear(in_dim, out_dim)
+
+        self.up = Sequential(
+            BatchNorm1d(out_dim, track_running_stats=False),
+            ReLU(inplace=True),
+            Dropout(dropout_p),
+        )
+
+    def forward(self, x, edge_index):
+        msg = self.msg(x)
+        rec = self.propagate(edge_index, x=msg)
+
+        y = rec + self.root_linear(x)
+        y = self.up(y)
+        return y
 
 
 class GNN(Module):
@@ -39,6 +69,7 @@ class GNN(Module):
 
         self.graph_cls = Sequential(
             Linear(hidden_dim, hidden_dim),
+            BatchNorm1d(hidden_dim, track_running_stats=False),
             ReLU(inplace=True),
             Linear(hidden_dim, self.out_dim),
         )
@@ -65,21 +96,26 @@ class GNN(Module):
 
                 y_pred = self(data)
                 y_true = data.y.view(-1, self.out_dim)
-                loss = self.criterion(y_pred, y_true)
+                loss = self.criterion(y_pred, y_true.float())
 
                 loss.backward()
                 opt.step()
 
-                rounded = (y_pred > 0.0).float()
+                rounded = (y_pred > 0.0).long()
+                correct = rounded == y_true
 
-                acc = (rounded == y_true).float().mean().cpu().item()
-                loss = loss.cpu().item()
+                acc = correct.float().mean().item()
+                all_correct = correct.min().item()
+                loss = loss.item()
                 t.set_postfix(loss=loss, acc=acc)
                 if acc > best_acc:
                     best_acc = acc
-                if acc == 1.0:
+
+                if all_correct:
+                    best_acc = 1.0
                     break
-        return acc
+
+        return best_acc
 
     def evaluate(self, data):
         self.eval()
@@ -95,8 +131,8 @@ class GNN(Module):
         opt = torch.optim.AdamW(self.parameters(), lr=self.lr, weight_decay=self.weight_decay)
         return opt
 
-    def fit(self, data, train_steps, lr=0.001, weight_decay=1e-5, device='cuda:0', **kwargs):
-        opt = torch.optim.AdamW(self.parameters(), lr=lr, weight_decay=weight_decay)
+    def fit(self, data, train_steps, lr_start=1e-3, weight_decay=1e-5, device='cuda:0', **kwargs):
+        opt = torch.optim.AdamW(self.parameters(), lr=lr_start, weight_decay=weight_decay)
         self.to(device)
         data.to(device)
         acc = self.epoch(data, opt, train_steps, **kwargs)

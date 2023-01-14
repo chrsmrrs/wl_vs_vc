@@ -9,8 +9,8 @@ from matplotlib.ticker import FormatStrFormatter
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--num_layers", type=int, default=[3], nargs='+', help="Number of layers")
-    parser.add_argument("--hidden_dim", type=int, default=[32, 128, 512], nargs='+', help="Hidden Dimension")
-    parser.add_argument("--file_name", type=str, default='simple_results.csv', help="CSV file to store results")
+    parser.add_argument("--hidden_dim", type=int, default=[4, 16, 256, 1024], nargs='+', help="Hidden Dimension")
+    parser.add_argument("--file_name", type=str, default='simple_results_4_1024.csv', help="CSV file to store results")
     parser.add_argument("--img_dir", type=str, default='results', help="Directory for saving plots")
     args = parser.parse_args()
 
@@ -25,7 +25,7 @@ if __name__ == '__main__':
         h_mask = df['hidden_dim'] == h
         for l in args.num_layers:
             l_mask = df['layers'] == l
-            o_mask = df['order'] <= 256
+            o_mask = df['order'] <= 90
             data = df[h_mask & l_mask & o_mask]
 
             ax = sns.lineplot(
@@ -42,3 +42,4 @@ if __name__ == '__main__':
 
     plt.legend()
     plt.savefig(os.path.join(args.img_dir, f'plot_simple_trees.png'))
+    plt.show()
