@@ -1,8 +1,0 @@
-#!/usr/local_rwth/bin/bash
-
-#SBATCH -J gpu_serial
-
-#SBATCH --time=24:00:00
-
-module load cuda/10.2
-/home/xi622576/miniconda3/envs/wl/bin/python3.10 -u  main_colors.py
