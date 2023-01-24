@@ -1,14 +1,13 @@
+import os
 from argparse import ArgumentParser
+
 import numpy as np
 import pandas as pd
-import os
-
 import torch
 from torch_geometric.data import Batch
 
-from model import GNN
 from data import get_unique_trees
-
+from model import GNN
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -18,7 +17,8 @@ if __name__ == '__main__':
     parser.add_argument("--weight_decay", type=float, default=1.e-5, help="Weight Decay")
     parser.add_argument("--pool_fn", type=str, default='sum', help="Pool")
     parser.add_argument("--order", type=int, default=[15, 20, 25, 30, 35, 40], nargs='+', help="Order of trees")
-    parser.add_argument("--num_trees", type=int, default=[5, 10, 20, 30, 40, 50, 60, 70], nargs='+', help="Number of trees")
+    parser.add_argument("--num_trees", type=int, default=[5, 10, 20, 30, 40, 50, 60, 70], nargs='+',
+                        help="Number of trees")
     parser.add_argument("--repeat", type=int, default=4, help="Repetitions")
     parser.add_argument("--num_assign", type=int, default=4, help="Number of assignments to try per set of trees")
     parser.add_argument("--train_steps", type=int, default=10000, help="Number of steps per epoch")

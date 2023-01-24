@@ -1,17 +1,18 @@
-from argparse import ArgumentParser
-import pandas as pd
 import os
-import seaborn as sns
-import matplotlib.pyplot as plt
-from matplotlib.ticker import FormatStrFormatter
+from argparse import ArgumentParser
 
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+from matplotlib.ticker import FormatStrFormatter
 
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--num_layers", type=int, default=[3], nargs='+', help="Number of layers")
     parser.add_argument("--hidden_dim", type=int, default=[64, 128, 256, 512], nargs='+', help="Hidden Dimension")
     parser.add_argument("--order", type=int, default=[20, 30, 40], nargs='+', help="Order of trees")
-    parser.add_argument("--num_trees", type=int, default=[5, 10, 20, 30, 40, 50, 60, 70], nargs='+', help="Number of trees")
+    parser.add_argument("--num_trees", type=int, default=[5, 10, 20, 30, 40, 50, 60, 70], nargs='+',
+                        help="Number of trees")
     parser.add_argument("--file_name", type=str, default='results.csv', help="CSV file to store results")
     parser.add_argument("--img_dir", type=str, default='results', help="Directory for saving plots")
     args = parser.parse_args()

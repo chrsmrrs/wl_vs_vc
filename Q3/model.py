@@ -1,5 +1,5 @@
 import torch
-from torch.nn import Module, Linear, Sequential, BCEWithLogitsLoss, ModuleList, BatchNorm1d, ReLU, LeakyReLU, Dropout
+from torch.nn import Module, Linear, Sequential, BCEWithLogitsLoss, ModuleList, BatchNorm1d, ReLU, Dropout
 from torch_geometric.nn import GraphConv, MessagePassing
 from torch_geometric.nn.pool import global_add_pool, global_mean_pool
 from tqdm import trange
