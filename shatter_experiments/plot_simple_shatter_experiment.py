@@ -9,13 +9,13 @@ from matplotlib.ticker import FormatStrFormatter
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--num_layers", type=int, default=[3], nargs='+', help="Number of layers")
-    parser.add_argument("--hidden_dim", type=int, default=[4, 16, 256, 1024], nargs='+', help="Hidden Dimension")
-    parser.add_argument("--file_name", type=str, default='simple_results_4_1024.csv', help="CSV file to store results")
+    parser.add_argument("--hidden_dim", type=int, default=[4, 16, 64, 256], nargs='+', help="Hidden Dimension")
+    parser.add_argument("--file_names", type=str, nargs='+', default=['simple_trees_results.csv'], help="CSV file to store results")
     parser.add_argument("--img_dir", type=str, default='results', help="Directory for saving plots")
     args = parser.parse_args()
 
-    csv_path = os.path.join('./results', f'{args.file_name}')
-    df = pd.read_csv(csv_path)
+    csv_paths = [os.path.join('./results', f'{n}') for n in args.file_names]
+    df = pd.concat([pd.read_csv(p) for p in csv_paths])
     df['accuracy'] *= 100
 
     colors = sns.color_palette()
@@ -38,7 +38,7 @@ if __name__ == '__main__':
             )
 
             ax.xaxis.set_major_formatter(FormatStrFormatter('%d'))
-            ax.set(title='Results on Simple Trees', xlabel='|V|', ylabel='Accuracy [%]')
+            ax.set(xlabel='|V|', ylabel='Accuracy [%]')
 
     plt.legend()
     plt.savefig(os.path.join(args.img_dir, f'plot_simple_trees.png'))
