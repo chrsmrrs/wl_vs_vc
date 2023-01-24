@@ -1,8 +1,8 @@
+import networkx as nx
 import numpy as np
 import torch
 from torch_geometric.data import Data
 from torch_geometric.utils import to_networkx
-import networkx as nx
 
 
 def random_tree(order):
@@ -73,7 +73,7 @@ def simple_tree(deg_1, deg_2):
 def get_simple_trees(order):
     data_list = []
     max_idx = int(np.floor(order / 2))
-    for i in range(max_idx+1):
+    for i in range(max_idx + 1):
         deg_1 = i
         deg_2 = order - i
         data = simple_tree(deg_1, deg_2)

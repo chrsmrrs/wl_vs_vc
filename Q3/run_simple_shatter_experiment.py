@@ -1,14 +1,13 @@
+import os
 from argparse import ArgumentParser
+
 import numpy as np
 import pandas as pd
-import os
-
 import torch
 from torch_geometric.data import Batch
 
-from model import GNN
 from data import get_simple_trees
-
+from model import GNN
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -17,7 +16,8 @@ if __name__ == '__main__':
     parser.add_argument("--lr", type=float, default=1.e-4, help="Learning Rate")
     parser.add_argument("--weight_decay", type=float, default=0, help="Weight Decay")
     parser.add_argument("--pool_fn", type=str, default='sum', help="Pool")
-    parser.add_argument("--order", type=int, default=[10, 20, 30, 40, 50, 60, 70, 80, 90], nargs='+', help="Order of trees")
+    parser.add_argument("--order", type=int, default=[10, 20, 30, 40, 50, 60, 70, 80, 90], nargs='+',
+                        help="Order of trees")
     parser.add_argument("--num_assign", type=int, default=50, help="Number of assignments to try per set of trees")
     parser.add_argument("--train_steps", type=int, default=100000, help="Number of steps per epoch")
     parser.add_argument("--file_name", type=str, default='simple_tree_results.csv', help="CSV file to store results")
